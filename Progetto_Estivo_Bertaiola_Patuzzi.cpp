@@ -3,69 +3,589 @@
 #include <cstdlib>
 #include <string>
 #include <fstream>
+#include <nlohmann/json.hpp>
 
 using namespace std;
+using json = nlohmann::json;
+
 #define LVLMAX_SALUTE 20
-#define LVLMAX_FORZA 3
 #define LVLMAX_AGILITA 20       
 #define LVLMAX_FORTUNA 25
+#define LVLMAX_FORZA 3
 #define LVLMAX_SPIRITUALITA 14
-#define LVLMAX_PLAYER LVLMAX_SALUTE+LVLMAX_FORZA+LVLMAX_AGILITA+LVLMAX_FORTUNA+LVLMAX_SPIRITUALITA
+#define LVLMAX_PLAYER LVLMAX_SALUTE + LVLMAX_FORZA + LVLMAX_AGILITA + LVLMAX_FORTUNA + LVLMAX_SPIRITUALITA
+#define FILE_SALVATAGGIO_DEAFULT = "salvataggio.json"
 
 
-struct nemico { //statistiche del nemico 
-	string name;
-	int danno=100;
-	int vita=100;
-	int agilita=100;
-	int fortuna=100;
-	int cure=1;
-	
-	int ferro=0;
-	int oro =0;
-	int diamante=0;
-	
-	int monete=0;
+void errore(String s){
+	cout << "\033[31m" << s << "\033[0m" << endl;
+}
+void info(String s){
+	cout << "\033[43;1m" << s << "\033[0m" << endl;
+}
+void racconto(String s){
+	cout << s << "\033[0m" << endl;
+}
+
+class PersonaggioBase {
+	protected:
+		string nome;
+		unsigned int salute;
+		unsigned int agilita; 
+		unsigned int fortuna; // Utilizzato da Player e Nemico, aumenta prob. del critico
+		
+		unsigned int ferro;
+		unsigned int oro;
+		unsigned int diamante;
+		unsigned int monete;
+
+	public:
+		PersonaggioBase(){
+			nome = "Personaggio1";
+			salute = 10;
+			agilita = 5;
+			fortuna = 5;
+
+			ferro = 0;
+			oro = 0;
+			diamante = 0;
+			monete = 0;
+		}
+
+		PersonaggioBase(string nomeP, int saluteP, int agilitaP, int fortunaP, int ferroP, int oroP, int diamanteP, int moneteP){
+			nome = nomeP;
+			salute = saluteP;
+			agilita = agilitaP;
+			fortuna = fortunaP;
+
+			ferro = ferroP;
+			oro = oroP;
+			diamante = diamanteP;
+			monete = moneteP;
+		}
+
+		//void setNome(string s){
+		//	if (s != ""){
+		//		nome = s;
+		//	} else {
+		//		/// TODO: LOG
+		//		// ERRORE NOME/ NOME PERSONAGGIO VUOTE
+		//	}
+		//}
+		string getNome(){
+			return nome;
+		}
+
+		virtual void setSalute(unsigned int i){
+			if(i > 0){
+				salute = i;
+			} else {
+				salute = 10; //DEFAULT
+			}
+		}
+		unsigned int getSalute(){
+			return salute;
+		}
+
+		virtual void setAgilita(unsigned int i){
+			if(i > 0){
+				agilita = i;
+			} else {
+				agilita = 5; //DEFAULT
+			}
+		}
+		unsigned int getAgilita(){
+			return agilita;
+		}
+
+		virtual void setFortuna(unsigned int i){
+			if(i > 0){
+				fortuna = i;
+			} else {
+				fortuna = 5; //DEFAULT
+			}
+		}
+		unsigned int getFortuna(){
+			return fortuna;
+		}
+
+		void setFerro(unsigned int  i){
+			if(i > 0){
+				ferro = i;
+			} else {
+				ferro = 0; //DEFAULT
+			}
+		}
+		unsigned int getFerro(){
+			return ferro;
+		}
+
+		void setOro(unsigned int i){
+			if(i > 0){
+				oro = i;
+			} else {
+				oro = 0; //DEFAULT
+			}
+		}
+		unsigned int getOro(){
+			return oro;
+		}
+
+		void setDiamante(unsigned int i){
+			if(i > 0){
+				diamante = i;
+			} else {
+				diamante = 0; //DEFAULT
+			}
+		}
+		unsigned int getDiamante(){
+			return diamante;
+		}
+
+		void setMonete(unsigned int i){
+			if(i > 0){
+				monete = i;
+			} else {
+				monete = 0; //DEFAULT
+			}
+		}
+		unsigned int getMonete(){
+			return monete;
+		}
 };
 
-struct recPlayer{ //struct che contiene tutte le informazioni sul giocatore
-	string nome="";
+//statistiche del nemico 
+struct nemico {
+	string name;
+	unsigned int danno = 100;
+	unsigned int vita = 100;
+	unsigned int cure = 1;
+	unsigned int agilita = 100;
+	unsigned int fortuna = 100;
+
+	unsigned int ferro = 0;
+	unsigned int oro = 0;
+	unsigned int diamante = 0;
+	unsigned int monete = 0;
+};
+
+//statistiche del nemico 
+class Nemico: PersonaggioBase{
+	protected:
+		unsigned int danno; //danno base
+		unsigned int cure; //num pozioni nel inventario
+	
+	public:
+		Nemico(){
+			name = "Cattivone";
+			salute = 100;
+			agilita = 100;
+			fortuna = 0;
+
+			ferro = 0;
+			oro = 0;
+			diamante = 0;
+			monete = 0;
+			danno = 100;
+			cure = 1;
+		}
+
+		Nemico(string nomeN,
+				unsigned int saluteN,
+				unsigned int agilitaN, 
+				unsigned int fortunaN,
+				unsigned int ferroN,
+				unsigned int oroN, 
+				unsigned int diamanteN,
+				unsigned int moneteN,
+				unsigned int dannoN,
+				unsigned int cureN){
+			name = nomeN;
+			salute = saluteN;
+			agilita = agilitaN;
+			fortuna = fortunaN;
+
+			ferro = ferroN;
+			oro = oroN;
+			diamante = diamanteN;
+			monete = moneteN;
+			danno = dannoN;
+			cure = cureN;
+		}
+
+		void setDanno(unsigned int i){
+			if(i > 0){
+				danno = i;
+			} else {
+				danno = 100; //DEFAULT
+			}
+		}
+		unsigned int getDanno(){
+			return danno;
+		}
+
+		void setCure(unsigned int i){
+			if(i > 0){
+				cure = i;
+			} else {
+				cure = 1; //DEFAULT
+			}
+		}
+		unsigned int getCure(){
+			return cure;
+		}
+};
+
+//struct che contiene tutte le informazioni sul giocatore
+struct recPlayer{
+	string nome = "";
+
 	//statistiche
-	int maxsalute=10; //max 20
-	int salute=10; //max 20
-	int forza=1; //max 3
-	int agilita=5; //max 20
+	int maxsalute = 10; //max 20
+	int salute = 10; //max 20
+	int forza = 1; //max 3
+	int agilita = 5; //max 20
+
 	//modificatori 
-	int fortuna=5; //max 25  possibilit� di ricevere monete doppie
-	int spiritualita=0; //max 14 utilizzo per tenere armi di un certo livello 
-	int livello=maxsalute+forza+agilita+fortuna+spiritualita;
-	int xp=0;
+	int fortuna = 5; //max 25  possibilita' di ricevere monete doppie
+	int spiritualita = 0; //max 14 utilizzo per tenere armi di un certo livello 
+	int livello = maxsalute + forza + agilita + fortuna + spiritualita;
+	int xp = 0;
 	//item
-	string  nome_spada= "spada arruginita"; // le spade aumentano i danni
-	int danno_spada= 0;
-	string nome_armatura= "armatura in pelle";
-	int difesa_armatura= 0;
-	int pozione_curativa=0;
-	string zona="dungeon_boss";
+	string nome_spada = "spada arruginita"; // le spade aumentano i danni
+	int danno_spada = 0;
+	string nome_armatura = "armatura in pelle";
+	int difesa_armatura = 0;
+	int pozione_curativa = 0;
+	string zona = "dungeon_boss";
 	
 	//item quest
-	int ferro=0;
-	int oro =0;
-	int diamante=0;
-	
-	int monete=0;
+	int ferro = 0;
+	int oro = 0;
+	int diamante = 0;
+	int monete = 0;
 	
 	//interazione npc
-	int	minatore_frase=1;
-	int marshall_frase=1;
-	int vescovo_frase=1;
-	int fabbro_frase=1;
+	int	minatore_frase = 1;
+	int vescovo_frase = 1;
+	int fabbro_frase = 1;
 	
-	int numero_segreto=0;
-	int numero_vescovo=0;
-	int numero_minatore=0;
-	int numero_fabbro=0;
-	bool gioco_finito= false;
+	int numero_segreto = 0;
+	int numero_vescovo = 0;
+	int numero_minatore = 0;
+	int numero_fabbro = 0;
+	bool gioco_finito = false;
+};
+
+//struct che contiene tutte le informazioni sul giocatore
+class RecPlayer: PersonaggioBase {
+	private:
+		unsigned short numero_segreto;
+		unsigned short numero_minatore;
+		unsigned short numero_vescovo;
+		unsigned short numero_fabbro;
+
+		void setNumeriSegreti(){
+			srand(time(NULL));
+			numero_segreto = (rand()%899)+100;
+			numero_vescovo = numero_segreto %10;// numero prima posizione
+			numero_minatore = ((numero_segreto - numero_vescovo)%100);//numero seconda posizione
+			numero_fabbro = (numero_segreto - (numero_minatore + numero_vescovo ));//numero terzo posizione
+		}
+	protected:
+		unsigned int maxsalute; //max 20
+		unsigned int forza; //max 3
+		unsigned int spiritualita; //max 14 utilizzo per tenere armi di un certo livello 
+
+		/// TODO: FARLE PROPRIETA livello PRIVATO MAGARI?
+		unsigned int livello;
+		unsigned int xp;
+
+		/// TODO: creare class/struct spada
+		string nome_spada; // le spade aumentano i danni
+		unsigned int danno_spada;
+
+		/// TODO: creare class/struct armatura
+		string nome_armatura;
+		unsigned int difesa_armatura;
+
+		unsigned int pozione_curativa;
+		/// TODO: implementare zone da poter espandere
+		string zona;
+		unsigned short minatore_frase; //interazione minatore
+		unsigned short vescovo_frase;	//interazione vescovo
+		unsigned short fabbro_frase;	//interazione fabbro
+		
+		bool gioco_finito;
+
+	public:
+		RecPlayer(){
+			name = "IlSalvatore";
+			salute = 10;
+			agilita = 5;
+			fortuna = 5;
+			ferro = 0;
+			oro = 0;
+			diamante = 0;
+			monete = 0;
+			maxsalute = 10;
+			forza = 1;
+			spiritualita = 0;
+			livello = maxsalute + forza + agilita + fortuna + spiritualita;
+			xp = 0;
+			nome_spada = "spada arruginita";
+			danno_spada = 0;
+			nome_armatura = "armatura in pelle";
+			difesa_armatura = 0;
+			pozione_curativa = 0;
+			zona = "dungeon_boss";
+			minatore_frase = 1;
+			vescovo_frase = 1;
+			fabbro_frase = 1;
+			setNumeriSegreti()
+			gioco_finito = false;
+		}
+		RecPlayer(string nomeR,
+				unsigned int saluteR,
+				unsigned int agilitaR,
+				unsigned int fortunaR,
+				unsigned int ferroR,
+				unsigned int oroR, 
+				unsigned int diamanteR,
+				unsigned int moneteR,
+				unsigned int maxsaluteR,
+				unsigned int forzaR, 
+				unsigned int spriritualitaR,
+				unsigned int xpR,
+				string nome_spadaR,
+				unsigned int danno_spadaR,
+				string nome_armaturaR,
+				unsigned int difesa_armaturaR,
+				unsigned int pozione_curativaR,
+				string zonaR,
+				unsigned short minatore_fraseR,
+				unsigned short vescovo_fraseR, 
+				unsigned short fabbro_fraseR,
+				bool gioco_finitoR){
+			name = nomeR;
+			salute = saluteR;
+			agilita = agilitaR;
+			fortuna = fortunaR;
+			ferro = ferroR;
+			oro = oroR;
+			diamante = diamanteR;
+			monete = moneteR;
+			forza = forzaR;
+			spiritualita = spriritualitaR;
+			maxsalute = maxsaluteR;
+			livello = maxsalute + forza + agilita + fortuna + spiritualita;
+			xp = xpR;
+			nome_spada = nome_spadaR;
+			danno_spada = danno_spadaR;
+			nome_armatura = nome_armaturaR;
+			difesa_armatura = difesa_armaturaR;
+			pozione_curativa = pozione_curativaR;
+			zona = zonaR;
+			minatore_frase = minatore_fraseR;
+			vescovo_frase = vescovo_fraseR;
+			fabbro_frase = fabbro_fraseR;
+			setNumeriSegreti()
+			gioco_finito = gioco_finitoR;
+		}
+
+		// OVERRIDE
+		void setMaxSalute(unsigned int i){
+			if(i > 0 && i <= LVLMAX_SALUTE){
+				salute = i;
+			} else {
+				salute = 10; //DEFAULT
+			}
+		}
+
+		void setAgilita(unsigned int i){
+			if(i > 0 && i <= LVLMAX_AGILITA){
+				agilita = i;
+			} else {
+				agilita = 5; //DEFAULT
+			}
+		}
+
+		void setFortuna(unsigned int i){
+			if(i > 0 && i <= LVLMAX_FORTUNA){
+				fortuna = i;
+			} else {
+				fortuna = 5; //DEFAULT
+			}
+		}
+
+		// SPECIFICI
+		void setForza(unsigned int i){
+			if(i > 0 && i <= LVLMAX_FORZA){
+				forza = i;
+			} else {
+				forza = 1; //DEFAULT
+			}
+		}
+		unsigned int getForza(){
+			return forza;
+		}
+
+		void setSpiritualita(unsigned int i){
+			if(i > 0 && i <= LVLMAX_SPIRITUALITA ){
+				spiritualita = i;
+			} else {
+				spiritualita = 1; //DEFAULT
+			}
+		}
+		unsigned int getSpiritualita(){
+			return spiritualita;
+		}
+
+		void setLivello(unsigned int i){
+			if(i > 0 && i <= LVLMAX_PLAYER ){
+				livello = i;
+			} else {
+				//DEFAULT
+				livello = maxsalute + forza +
+					agilita + fortuna + spiritualita;
+			}
+		}
+		int getLivello(){
+			return livello;
+		}
+
+		void setXP(unsigned int i){
+			if(i > 0){
+				xp = i;
+			} else {
+				xp = 1; //DEFAULT
+			}
+		}
+		unsigned int getXP(){
+			return xp;
+		}
+		
+		void setNomeSpada(string s){
+			if (s != ""){
+				nome_spada = s;
+			} else {
+				/// TODO: LOG
+				// ERRORE NOME/ NOME SPADA
+			}
+		}
+		string getNomeSpada(){
+			return nome_spada;
+		}
+
+		void setDannoSpada(unsigned int i){
+			if(i >= 0){
+				danno_spada = i;
+			} else {
+				i = 0;
+			}
+		}
+		unsigned int getDannoSpada(){
+			return danno_spada;
+		}
+
+		void setNomeArmatura(string s){
+			if (s != ""){
+				nome_armatura = s;
+			} else {
+				/// TODO: LOG
+				// ERRORE NOME/ NOME ARMATURA
+			}
+		}
+		string getNomeArmatura(){
+			return nome_armatura;
+		}
+
+		void setDifesaArmatura(unsigned int i){
+			if(i >= 0){
+				difesa_armatura = i;
+			} else {
+				i = 0;
+			}
+		}
+		unsigned int getDifesaArmatura(){
+			return difesa_armatura;
+		}
+
+		void setPozioneCurativa(unsigned int i){
+			if(i >= 0){
+				pozione_curativa = i;
+			} else {
+				i = 0;
+			}
+		}
+		unsigned int getPozioneCurativa(){
+			return pozione_curativa;
+		}
+
+		void setZona(string s){
+			if (s != ""){
+				zona = s;
+			} else {
+				/// TODO: LOG
+				// ERRORE NOME/ NOME ZONA
+			}
+		}
+		string getZona(){
+			return zona;
+		}
+
+		void setMinatoreFrase(unsigned short i){
+			if(i > 0){
+				minatore_frase = i;
+			} else {
+				i = 1;
+			}
+		}
+		unsigned short getMinatoreFrase(){
+			return minatore_frase;
+		}
+
+		void setVescovoFrase(unsigned short i){
+			if(i > 0){
+				vescovo_frase = i;
+			} else {
+				i = 1;
+			}
+		}
+		unsigned short getVescovoFrase(){
+			return vescovo_frase;
+		}
+
+		void setFabbroFrase(unsigned short i){
+			if(i > 0){
+				fabbro_frase = i;
+			} else {
+				i = 1;
+			}
+		}
+		unsigned short getFabbroFrase(){
+			return fabbro_frase;
+		}
+
+		unsigned short getNumeroSegreto(){
+			return numero_segreto;
+		}
+		unsigned short getNumeroVescovo(){
+			return numero_vescovo;
+		}
+		unsigned short getNumeroMinatore(){
+			return numero_minatore;
+		}
+		unsigned short getNumeroFabbro(){
+			return numero_fabbro;
+		}
+
+		bool isGiocoFinito(){
+			return gioco_finito;
+		}
+		void setGiocoFinito(){
+			gioco_finito = true;
+		}
 };
 
 /*menu*/
@@ -111,13 +631,6 @@ void cura_nemico(nemico &enemy, recPlayer &player);
 void turno_nemico(nemico &enemy, recPlayer &player, int difficolta_dungeon,int fuga);
 void combattimento(nemico &enemy, recPlayer &player, int difficolta_dungeon);
 
-void bug();//segnala i bug
-
-/*funzioni*/
-void bug(){
-	cout<<endl<<"***************************"<<endl<<"a quanto pare c'e' un bug riportalo agli sviluppatori che provvederanno a risolverlo"<<endl<<"**************************************"<<endl; 
-}
-
 int menu_scelte(nemico &enemy, recPlayer &player){
 	int scelta=0;//variabile che determina le scelte al interno del menu
 	int zona=0;//variabile che determina la zona in cui andare
@@ -149,9 +662,8 @@ int menu_scelte(nemico &enemy, recPlayer &player){
 				break;
 		} 
 	}while(!chiudi);
-
-
 }
+
 int open_menu(nemico &enemy, recPlayer &player){//funzione che gestisce gli input dati nel menu
 	int scelta;
 	do{//gioca da fare
@@ -167,9 +679,7 @@ int open_menu(nemico &enemy, recPlayer &player){//funzione che gestisce gli inpu
 	return scelta;	
 }
 
-
 void caricamento(recPlayer &player){//funzione che gestisce il cariamento del account 
-
     cout<<"stiamo caricando i file..."<<endl;//per bellezza e informare l'utente
     system("pause");
 	ifstream MyReadFile("salvataggio.txt");//apriamo il file in lettura 
@@ -214,7 +724,6 @@ void caricamento(recPlayer &player){//funzione che gestisce il cariamento del ac
 		//iterazioni npc
 		MyReadFile>>player.minatore_frase;
 		MyReadFile>>player.vescovo_frase;
-		MyReadFile>>player.marshall_frase;
 		MyReadFile>>player.fabbro_frase;
 		MyReadFile>>player.numero_segreto;
 		player.numero_vescovo=player.numero_segreto %10;// numero prima posizione
@@ -253,13 +762,44 @@ void salvataggio(recPlayer player){//passiamo la struct player per mettre tutti 
     FileSalvataggio<<player.monete<<endl;
     //interazione npc
     FileSalvataggio<<player.minatore_frase<<endl;
-    FileSalvataggio<<player.marshall_frase<<endl;
     FileSalvataggio<<player.vescovo_frase<<endl;
     FileSalvataggio<<player.fabbro_frase<<endl;
     FileSalvataggio<<player.numero_segreto<<endl;
     //gioco finito?
     FileSalvataggio<<player.gioco_finito<<endl;
 }
+
+RecPlayer caricamentoJSON(){
+	///TODO: magari fargli scrivere il nome del file da caricare?
+	info("Stiamo caricando la partita...");
+	system("pause");
+
+	ifstream File(FILE_SALVATAGGIO_DEAFULT); //apriamo il file in lettura 
+	if (!File.is_open()) { //se il file non si apre informiamo l'utente
+        errore("Non e' stato possibile aprire - '" << FILE_SALVATAGGIO_DEAFULT << "'");
+    } else {
+		json data = json::parse(File);
+		///TODO: finire implementazione, deve ritornare l'oggetto RecPlayer
+
+	}
+}
+
+void salvataggioJSON(RecPlayer &player){
+	info("Stiamo salvando la partita...");
+
+	ofstream FileSalvataggio(FILE_SALVATAGGIO_DEAFULT);
+	/// TODO: controllare se riesca a salvare il file
+	//if (FileSalvataggio.is_open()){
+		"NomePlayer, NomeSpada, NomeArmatura, Zona, MaxSalute, Salute, Forza, Agilita, Fortuna, Spiritualita, Xp, DannoSpada, DifesaArmatura, PozioneCurativa, Ferro, Oro, Diamante, Monete, MinatoreFrase, MarshallFrase, VescovoFrase, FabbroFrase, IdPlayer";
+		/// TODO: CONTINUARE CON LE VARIE PROPRIETA
+		FileSalvataggio << player.getNome() << ", ";
+		info("Salvataggio partita concluso con successo.");
+	//} else {
+		//errore
+		//cout<<"Errore salvataggio partita!"<<endl;
+	//}
+}
+
 void info_personaggio_output(recPlayer player){//serve per quando l'utente seleziona informazioni personaggio dal minatore,
 	system("CLS");
 	cout<<"Nome: "<<player.nome <<endl;
@@ -327,6 +867,7 @@ void viaggia(nemico &enemy, recPlayer &player){//gestione del viaggio
 		}
 	}while(!(esci_dal_gioco||player.gioco_finito));//fino a quando il gioco non e' finito e' posssibile spostarsi 
 }
+
 int spostarsi(int scelta,recPlayer &player){
     //scegli tra miniera, casa,villaggio e mercato
 	do{
@@ -339,6 +880,7 @@ int spostarsi(int scelta,recPlayer &player){
     system("CLS");
     return scelta;
 }
+
 void miniera(nemico &enemy, recPlayer &player, bool &esci_dal_gioco){
     system("CLS");
     int parla;
@@ -521,10 +1063,10 @@ void npc_parla(string nome_npc, int &qn_frase){
     }
 	ifstream MyReadFile(apertura_file);//si apre il file in lettura
 	if(!MyReadFile.is_open()){
-		bug();// se non lo apre avvisa del bug e c'e lo dite
+		error("Non ho trovato il file");
 	}
 	for (int i =0; i<qn_frase; i++){
-		getline (MyReadFile, frase);//si passa ogni riga fino ad arrivare alla frase che serve che e' la variabiel qn_frase
+		getline(MyReadFile, frase);//si passa ogni riga fino ad arrivare alla frase che serve che e' la variabiel qn_frase
 	}
 	cout <<endl<< frase<<endl<<endl;//dopo che la si ha la si stampa
 	
@@ -532,8 +1074,6 @@ void npc_parla(string nome_npc, int &qn_frase){
 	MyReadFile.close();
 	
 }
-
-
 
 void quest_minatore(recPlayer &player){//quest del minatore
 	string nome_npc="minatore";//ci si segna il nome del npc cosi da sapere dopo che file apire
@@ -608,10 +1148,9 @@ void quest_minatore(recPlayer &player){//quest del minatore
 		npc_parla(nome_npc, player.minatore_frase);
 		cout<<"numero:"<<player.numero_minatore/10<<endl;//diamo la seconda cifra del numero segreto
 	}else{ //in caso di bug
-		bug();
+		errore("Errore generico");
 	}
 }
-
 
 void quest_vescovo(recPlayer &player){
 	int risposta=1;
@@ -646,11 +1185,10 @@ void quest_vescovo(recPlayer &player){
 			npc_parla(nome_npc, player.vescovo_frase);
 			cout<<"numero: "<<player.numero_vescovo<<endl;
 		}else{
-			bug();
+			errore("Errore generico");
 		}
 	}
 }
-
 
 void quest_fabbro(recPlayer &player){//STESSA COSA DEL MINATORE PERO' HA 2 QUEST E MODIFICA L'EQUIPAGGIAMENTO
 	int risposta=1;
@@ -716,6 +1254,7 @@ void quest_fabbro(recPlayer &player){//STESSA COSA DEL MINATORE PERO' HA 2 QUEST
 		}
 	}
 }
+
 void acquista_funzioni(recPlayer &player){
 	int quantita=0;//quantita' di pozioni che si vogliono acquistare 
 	if(player.monete>=5){
@@ -739,7 +1278,6 @@ void acquista_funzioni(recPlayer &player){
 	}
 }
 
-
 void dungeon(nemico &enemy, recPlayer &player){
 	int difficolta_dungeon=4;//difficolta' del boss
 	if(player.zona!="dungeon_boss"){
@@ -750,8 +1288,6 @@ void dungeon(nemico &enemy, recPlayer &player){
 	}
 	combattimento(enemy,player,difficolta_dungeon);//funzione del combattimento 
 }
-
-
 
 void selezione_mostro(int difficolta_dungeon,string zona,nemico &enemy){//funzione che sceglie i paramentri del mostro che affronterai nel dungeon
 	// in base alla difficolta' i mostri hanno paramentri diversi
@@ -1027,6 +1563,7 @@ int colpo_critico_player(recPlayer &player){//per critttare
 			return 1;//*1
 		}
 }
+
 void attacco_player(nemico &enemy, recPlayer &player){
 	int danno=0;
 	if(!schivata(enemy, player,2)){//se il nemico non schiva
@@ -1042,6 +1579,7 @@ void attacco_player(nemico &enemy, recPlayer &player){
 	}
 
 }
+
 void pozioni_player(recPlayer &player, int &flag_ripeti){//per le pozzioni
 	if(player.salute == player.maxsalute ){//se la salute non sia gi� al massimo
 		cout<<endl<<"la tua salute e' gia' al massimo"<<endl<<endl;
@@ -1073,6 +1611,7 @@ void fuga_player(recPlayer &player, int &fuga, int difficolta_dungeon){//sacappa
 			fuga=0;
 		}
 }
+
 void turno_player (nemico &enemy, recPlayer &player,int &fuga,int difficolta_dungeon){
 	if(fuga !=1 &&enemy.vita >0 && player.salute >0){//controllo che ci siano tutti i requisiti per giocare un turno
 		int scelta_azione=0;
@@ -1108,7 +1647,6 @@ void turno_player (nemico &enemy, recPlayer &player,int &fuga,int difficolta_dun
 		}while(flag_ripeti==1);//si fa fino a quando non si fa una cosa inutile
 	}
 }
-
 
 /*
 !!!!!!!!!
@@ -1166,6 +1704,7 @@ void turno_nemico(nemico &enemy, recPlayer &player, int difficolta_dungeon,int f
 		}
 	}
 }
+
 void ricompense_vittoria(nemico &enemy, recPlayer &player, int difficolta_dungeon){
 		int xp=0;
 		xp=((rand()%30)+1)*difficolta_dungeon;//numero random da 1 a 30 moltiplicato per la difficolta' dungeon
@@ -1198,7 +1737,6 @@ void ricompense_vittoria(nemico &enemy, recPlayer &player, int difficolta_dungeo
 			system("CLS");
 		}
 }
-
 
 void combattimento(nemico &enemy, recPlayer &player, int difficolta_dungeon){
 	selezione_mostro(difficolta_dungeon,player.zona,enemy);//scelta del mostro che e' sopra
@@ -1237,6 +1775,7 @@ void combattimento(nemico &enemy, recPlayer &player, int difficolta_dungeon){
 	
 }
 
+//OLD MAIN
 int main(){
 	nemico enemy;
 	recPlayer player;
@@ -1249,5 +1788,15 @@ int main(){
 	
 	menu_scelte(enemy, player);
 	
+	return 0;
+}
+
+//NEW MAIN
+int main(){
+	cout<<"Loading game...."<<endl;
+	Nemico* enemy = new Nemico();
+	RecPlayer* player = new RecPlayer();;
+	srand(time(NULL)); // non so se sia la giusta posizione
+
 	return 0;
 }
