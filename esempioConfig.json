@@ -1,0 +1,49 @@
+{
+  "zone": {
+    "menu":{
+      "descrizione": "Seleziona le scelte:",
+      "npc":[],
+      "childs":["miniera", "mercato", "casa", "villaggio", "arena"],
+      "parent":[]
+    },
+    "miniera": {
+      "descrizione":"lorem ipsum",
+      "npc":["C-Minatore"],
+      "childs":["caverna"],
+      "parent":["menu"]
+    },
+    "caverna": {
+      "descrizione":"lorem ipsum",
+      "npc":["N-Drago"],
+      "childs":[],
+      "parent":["miniera"]
+    },
+    "mercato": {},
+    "casa": {},
+    "villaggio": {},
+    "arena": {}
+  },
+  "personaggi": {
+    "_comment": "C-xxxx = NPC, N-xxxx = Nemico",
+    "C-Minatore":{
+      "nome": "Minatore baffuto",
+      "quest":[
+        {
+            "id": 1,
+            "descrizione":"portami 5 banane",
+            "discorso":["Ciao viandante...", "mi servirebbe proprio un favore..."]
+        },
+        {}
+      ]
+    },
+    "N-Drago":{
+        "_comment": "i valori di proprieta son di 'range', solo per darsi un idea",
+        "nome": "Drago rosso occhi viola super",
+        "vita": 2,
+        "agilita": 2,
+        "fortuna": 2,
+        "danno": 3,
+        "risorse": 3
+    }
+  }
+}
