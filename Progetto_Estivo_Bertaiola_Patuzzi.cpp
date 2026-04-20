@@ -152,6 +152,10 @@ class PersonaggioBase {
 		unsigned int getMonete(){
 			return monete;
 		}
+
+		bool isAlive(){
+			return salute > 0;
+		}
 };
 
 //statistiche del nemico 
@@ -321,27 +325,35 @@ class RecPlayer: PersonaggioBase {
 	public:
 		RecPlayer(){
 			name = "IlSalvatore";
+			maxsalute = 10;
 			salute = 10;
+			forza = 1;
 			agilita = 5;
 			fortuna = 5;
+			spiritualita = 0;
+
 			ferro = 0;
 			oro = 0;
 			diamante = 0;
 			monete = 0;
-			maxsalute = 10;
-			forza = 1;
-			spiritualita = 0;
+			
+			
 			livello = maxsalute + forza + agilita + fortuna + spiritualita;
 			xp = 0;
+			
 			nome_spada = "spada arruginita";
 			danno_spada = 0;
 			nome_armatura = "armatura in pelle";
 			difesa_armatura = 0;
+			
 			pozione_curativa = 0;
+			
 			zona = "dungeon_boss";
+			
 			minatore_frase = 1;
 			vescovo_frase = 1;
 			fabbro_frase = 1;
+			
 			setNumeriSegreti()
 			gioco_finito = false;
 		}
@@ -586,6 +598,32 @@ class RecPlayer: PersonaggioBase {
 		void setGiocoFinito(){
 			gioco_finito = true;
 		}
+
+		//stampa statistiche personaggio
+		void infoPersonaggio(){
+			racconto()
+			cout<<"Nome: "<<nome<<endl;
+			cout<<"Salute disponibile: "<<salute<<endl;
+			cout<<"Salute massima: "<<maxsalute<<endl;
+			cout<<"Forza: "<<forza<<endl;
+			cout<<"Livello: "<<livello<<endl;
+			cout<<"XP: "<<xp<<endl;
+			cout<<endl<<"\t *Modificatori*"<<endl;
+			cout<<"Agilita: "<<agilita<<endl;
+			cout<<"Fortuna: "<<fortuna<<endl;
+			cout<<"Spiritualita: "<<spiritualita<<endl;
+			cout<<endl<<"\t *Equipaggiamento*"<<endl;
+			cout<<nome_spada <<" che aumenta i danni di "<<danno_spada<<endl;
+			cout<<nome_armatura <<" che riduce i danni di "<<difesa_armatura <<endl;
+			cout<<"Pozione Curativa: "<<pozione_curativa<<endl;
+			cout<<endl<<"\t *Item*"<<endl;
+			cout<<"Ferro :"<<ferro<<endl;
+			cout<<"Oro :"<<oro<<endl;
+			cout<<"Diamante :"<<diamante<<endl;
+			cout<<"Monete : "<<monete<<endl;
+		}
+
+
 };
 
 /*menu*/
@@ -618,9 +656,11 @@ void acquista_funzioni(recPlayer &player);
 void dungeon(nemico &enemy, recPlayer &player);
 void selezione_mostro(int difficolta_dungeon,string zona,nemico &enemy);
 void salita_di_livello(recPlayer &player);
+
 bool schivata(nemico &enemy, recPlayer &player,int scelta);
 void statistiche_combattimento(nemico &enemy, recPlayer &player, int &flag_ripeti);
 int colpo_critico_player(recPlayer &player);
+
 void attacco_player(nemico &enemy, recPlayer &player);
 void pozioni_player(recPlayer &player, int &flag_ripeti);
 void fuga_player(recPlayer &player, int &fuga, int difficolta_dungeon);
@@ -630,6 +670,54 @@ void attacco_nemico(nemico &enemy, recPlayer &player);
 void cura_nemico(nemico &enemy, recPlayer &player);
 void turno_nemico(nemico &enemy, recPlayer &player, int difficolta_dungeon,int fuga);
 void combattimento(nemico &enemy, recPlayer &player, int difficolta_dungeon);
+
+
+/// TODO: mostrare statistiche ogni turno
+class Combattimento
+{
+	private:
+		RecPlayer personaggio;
+		Nemico nemico
+		bool fuga;
+		bool ripeti;
+	public:
+		Combattimento(RecPlayer &player){
+			personaggio = player;
+			nemico = NULL;
+		};
+		~Combattimento();
+
+		void iniziaCombattimento(int difficolta_dungeon){
+			nemico = selezioneMostro(difficolta_dungeon, personaggio.getZona());
+			fuga=false;
+			ripeti=false
+
+			while(player.isAlive() && nemico.isAlive()){
+				if(firstTurn()){
+					/// TODO: Implementare il turno del player 
+				} else {
+					/// TODO: Implementare il turno del player 
+				}
+				statistiche_combattimento(nemico, personaggio);
+			}
+			
+		}
+		Nemico selezioneMostro(int difficolta_dungeon, string zona){
+			Nemico enemy;
+		}
+
+		bool firstTurn(){
+			return personaggio.getAgilita() >= nemico.getAgilita();
+		}
+
+		
+};
+
+
+
+
+
+
 
 int menu_scelte(nemico &enemy, recPlayer &player){
 	int scelta=0;//variabile che determina le scelte al interno del menu
