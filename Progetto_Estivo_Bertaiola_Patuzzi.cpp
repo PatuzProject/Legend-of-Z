@@ -14,9 +14,11 @@ using json = nlohmann::json;
 #define LVLMAX_FORZA 3
 #define LVLMAX_SPIRITUALITA 14
 #define LVLMAX_PLAYER LVLMAX_SALUTE + LVLMAX_FORZA + LVLMAX_AGILITA + LVLMAX_FORTUNA + LVLMAX_SPIRITUALITA
-#define FILE_SALVATAGGIO_DEAFULT = "salvataggio.json"
 
+string FILE_SALVATAGGIO_DEAFULT = "salvataggio.json";
+json DATA_CARICAMENTO;
 
+//https://en.wikipedia.org/wiki/ANSI_escape_code
 void errore(string s){
 	cout << "\033[31m" << s << "\033[0m" << endl;
 }
@@ -71,8 +73,7 @@ class PersonaggioBase {
 		//	if (s != ""){
 		//		nome = s;
 		//	} else {
-		//		/// TODO: LOG
-		//		// ERRORE NOME/ NOME PERSONAGGIO VUOTE
+		//		// errore("Errore, nome personaggio vuoto");
 		//	}
 		//}
 		string getNome(){
@@ -295,9 +296,32 @@ class RecPlayer: public PersonaggioBase {
 		void setNumeriSegreti(){
 			srand(time(NULL));
 			numero_segreto = (rand()%899)+100;
+			/// TODO: valutare di salvare solo il numero segreto e 'giocarci'
+			///			(magari unire con il nome in binario) per avere anche gli altri numeri
 			numero_vescovo = numero_segreto %10;// numero prima posizione
 			numero_minatore = ((numero_segreto - numero_vescovo)%100);//numero seconda posizione
 			numero_fabbro = (numero_segreto - (numero_minatore + numero_vescovo ));//numero terzo posizione
+		}
+
+		void setNumeroSegreto(unsigned int num){
+			if (num > 0){
+				numero_segreto = num;
+			}
+		}
+		void setNumeroMinatore(unsigned int num){
+			if (num > 0){
+				numero_minatore = num;
+			}
+		}
+		void setNumeroVescovo(unsigned int num){
+			if (num > 0){
+				numero_vescovo = num;
+			}
+		}
+		void setNumeroFabbro(unsigned int num){
+			if (num > 0){
+				numero_fabbro = num;
+			}
 		}
 	protected:
 		unsigned int maxsalute; //max 20
@@ -414,6 +438,9 @@ class RecPlayer: public PersonaggioBase {
 			} else {
 				salute = 10; //DEFAULT
 			}
+		}
+		unsigned int getMaxSalute(){
+			return maxsalute;
 		}
 
 		void setAgilita(unsigned int i){
@@ -600,27 +627,62 @@ class RecPlayer: public PersonaggioBase {
 
 		//stampa statistiche personaggio
 		void infoPersonaggio(){
-			racconto("Presentati agli ospiti...");
+			titolo("Presentati agli ospiti...");
+			racconto("Nome: "+nome);
+			racconto("Salute disponibile: " + to_string(salute));
+			racconto("Salute massima: " + to_string(maxsalute));
+			racconto("Forza: " + to_string(forza));
+			racconto("Livello: " + to_string(livello));
+			racconto("XP: " + to_string(xp));
+			racconto("\t*Modificatori*");
+			racconto("Agilita: " + to_string(agilita));
+			racconto("Fortuna: " + to_string(fortuna));
+			racconto("Spiritualita: " + to_string(spiritualita));
+			racconto("\t*Equipaggiamento*");
+			racconto(nome_spada + " che aumenta i danni di " + to_string(danno_spada));
+			racconto(nome_armatura + " che riduce i danni di " + to_string(difesa_armatura));
+			racconto("Pozione Curativa: " + to_string(pozione_curativa));
+			racconto("\t*Item*");
+			racconto("Ferro :" + to_string(ferro));
+			racconto("Oro :" + to_string(oro));
+			racconto("Diamante :" + to_string(diamante));
+			racconto("Monete : " + to_string(monete));
+		}
 
-			cout<<"Nome: "<<nome<<endl;
-			cout<<"Salute disponibile: "<<salute<<endl;
-			cout<<"Salute massima: "<<maxsalute<<endl;
-			cout<<"Forza: "<<forza<<endl;
-			cout<<"Livello: "<<livello<<endl;
-			cout<<"XP: "<<xp<<endl;
-			cout<<endl<<"\t *Modificatori*"<<endl;
-			cout<<"Agilita: "<<agilita<<endl;
-			cout<<"Fortuna: "<<fortuna<<endl;
-			cout<<"Spiritualita: "<<spiritualita<<endl;
-			cout<<endl<<"\t *Equipaggiamento*"<<endl;
-			cout<<nome_spada <<" che aumenta i danni di "<<danno_spada<<endl;
-			cout<<nome_armatura <<" che riduce i danni di "<<difesa_armatura <<endl;
-			cout<<"Pozione Curativa: "<<pozione_curativa<<endl;
-			cout<<endl<<"\t *Item*"<<endl;
-			cout<<"Ferro :"<<ferro<<endl;
-			cout<<"Oro :"<<oro<<endl;
-			cout<<"Diamante :"<<diamante<<endl;
-			cout<<"Monete : "<<monete<<endl;
+		json toJson(){
+			return {
+				{"id", getNumeroSegreto() },
+				{"idM", getNumeroMinatore() },
+				{"idV", getNumeroVescovo() },
+				{"idF", getNumeroFabbro() },
+				{"nome", getNome() },
+				{"salute", getSalute() },
+				{"maxsalute", getMaxSalute() },
+				{"agilita", getAgilita() },
+				{"fortuna", getFortuna() },
+				{"ferro", getFerro() },
+				{"oro", getOro() },
+				{"diamanti", getDiamante() },
+				{"monete", getMonete() },
+				{"forza", getForza() },
+				{"spiritualita", getSpiritualita() },
+				{"livello", getLivello() },
+				{"xp", getXP() },
+				{"spada", {
+					{"nome", getNomeSpada() },
+					{"danno", getDannoSpada() }
+				}},
+				{"armatura", {
+					{"nome", getNomeArmatura() },
+					{"difesa", getDifesaArmatura() }
+				}},
+				{"pozione_curativa", getPozioneCurativa() },
+				{"zona", getZona() },
+				{"minatore_frase", getMinatoreFrase() },
+				{"vescovo_frase", getVescovoFrase() },
+				{"fabbo_frase", getFabbroFrase() },
+				{"fine", isGiocoFinito() }
+			};
 		}
 };
 
@@ -670,7 +732,7 @@ void turno_nemico(nemico &enemy, recPlayer &player, int difficolta_dungeon,int f
 void combattimento(nemico &enemy, recPlayer &player, int difficolta_dungeon);
 
 
-/// TODO: mostrare statistiche ogni turno
+
 class Combattimento {
 	protected:
 		RecPlayer personaggio;
@@ -710,14 +772,14 @@ class Combattimento {
 
 		void stampaStatistiche(Nemico enemy, RecPlayer player){
 			titolo("\t\t\tStatistiche combattimento");
-			cout << player.getNome() <<"\t\t"<< enemy.getNome() <<endl;
-			cout << "salute: " << player.getSalute() <<"\tsalute: "<< enemy.getSalute() <<endl;
-			cout << "danno: " << player.getForza() + player.getDannoSpada() << "\tdanno: "<<enemy.getDanno() <<endl;
-			cout << "difesa: " << player.getDifesaArmatura() <<"\tdifesa: "<<endl;
-			cout << "agilita': " << player.getAgilita() <<"\tagilita': "<< enemy.getAgilita() <<endl;
-			cout << "fortuna: " << player.getFortuna() <<"\tfortuna: "<< enemy.getFortuna() <<endl;
-			cout << "arma: " << player.getNomeSpada() <<endl;
-			cout << "armatura " << player.getNomeArmatura() << endl << endl;
+			racconto(player.getNome() +"\t\t"+ enemy.getNome());
+			racconto("sSalute: " + to_string(player.getSalute()) + "\tSalute: " + to_string(enemy.getSalute()));
+			racconto("Danno: " + player.getForza() + to_string(player.getDannoSpada()) + "\tDanno: " + to_string(enemy.getDanno()));
+			racconto("Difesa: " + player.getDifesaArmatura());
+			racconto("Agilita': " + to_string(player.getAgilita()) + "\tAgilita': " + to_string(enemy.getAgilita()));
+			racconto("Fortuna: " + to_string(player.getFortuna()) + "\tFortuna: " + to_string(enemy.getFortuna()));
+			racconto("Arma: " + player.getNomeSpada());
+			racconto("Armatura " + player.getNomeArmatura());
 		}
 };
 
@@ -864,36 +926,35 @@ void salvataggio(recPlayer player){//passiamo la struct player per mettre tutti 
     //gioco finito?
     FileSalvataggio<<player.gioco_finito<<endl;
 }
-
-RecPlayer caricamentoJSON(){
-	///TODO: magari fargli scrivere il nome del file da caricare?
+// Carica i dati in DATA_CARICAMENTO usando il path della variabile FILE_SALVATAGGIO_DEAFULT
+// ritornando true o false se e' riuscito a caricarli o meno
+bool caricamentoJSON(){
 	info("Stiamo caricando la partita...");
 	system("pause");
 
-	ifstream File(FILE_SALVATAGGIO_DEAFULT); //apriamo il file in lettura 
-	if (!File.is_open()) { //se il file non si apre informiamo l'utente
-        errore("Non e' stato possibile aprire - '" << FILE_SALVATAGGIO_DEAFULT << "'");
+	///TODO: valutare se richiedere il nome del file da caricare
+	ifstream File(FILE_SALVATAGGIO_DEAFULT);
+	if (!File.is_open()) {
+        errore("Non e' stato possibile aprire - '" + FILE_SALVATAGGIO_DEAFULT + "'");
+		return false;
     } else {
-		json data = json::parse(File);
-		///TODO: finire implementazione, deve ritornare l'oggetto RecPlayer
-
+		DATA_CARICAMENTO = json::parse(File);
+		return true;
 	}
 }
 
-void salvataggioJSON(RecPlayer &player){
+// Salva i dati in DATA_CARICAMENTO usando il path della variabile FILE_SALVATAGGIO_DEAFULT
+// ritornando true o false se e' riuscito a salvarli o meno
+bool salvataggioJSON(){
 	info("Stiamo salvando la partita...");
-
 	ofstream FileSalvataggio(FILE_SALVATAGGIO_DEAFULT);
-	/// TODO: controllare se riesca a salvare il file
-	//if (FileSalvataggio.is_open()){
-		"NomePlayer, NomeSpada, NomeArmatura, Zona, MaxSalute, Salute, Forza, Agilita, Fortuna, Spiritualita, Xp, DannoSpada, DifesaArmatura, PozioneCurativa, Ferro, Oro, Diamante, Monete, MinatoreFrase, MarshallFrase, VescovoFrase, FabbroFrase, IdPlayer";
-		/// TODO: CONTINUARE CON LE VARIE PROPRIETA
-		FileSalvataggio << player.getNome() << ", ";
+	FileSalvataggio << setw(4) << DATA_CARICAMENTO << endl;
+	FileSalvataggio.close();
+	if(!FileSalvataggio) {
+		errore("Errore salvataggio partita!");
+	} else {
 		info("Salvataggio partita concluso con successo.");
-	//} else {
-		//errore
-		//cout<<"Errore salvataggio partita!"<<endl;
-	//}
+	}
 }
 
 void info_personaggio_output(recPlayer player){//serve per quando l'utente seleziona informazioni personaggio dal minatore,

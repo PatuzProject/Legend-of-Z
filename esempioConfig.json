@@ -39,11 +39,44 @@
     "N-Drago":{
         "_comment": "i valori di proprieta son di 'range', solo per darsi un idea",
         "nome": "Drago rosso occhi viola super",
-        "vita": 2,
+        "salute": 2,
         "agilita": 2,
         "fortuna": 2,
         "danno": 3,
         "risorse": 3
     }
+  },
+  "protagonista":{
+    "id": 0,
+    "idM": 0,
+    "idV": 0,
+    "idF": 0,
+    "nome":"Giorgino",
+    "salute": 10,
+    "maxsalute": 1,
+    "agilita": 1,
+    "fortuna": 1,
+    "ferro": 1,
+    "oro": 1,
+    "diamanti": 1,
+    "monete": 1,
+    "forza": 1,
+    "spiritualita": 1,
+    "livello": 1,
+    "xp": 1,
+    "spada": {
+      "nome": "la spada galattica di sauron",
+      "danno": 0.5
+    },
+    "armatura": {
+      "nome": "armatura mistica di geronimo stilton",
+      "difesa": 0.5
+    },
+    "pozione_curativa": 1,
+    "zona": "menu",
+    "minatore_frase": 0,
+    "vescovo_frase": 0,
+    "fabbo_frase": 0,
+    "fine": 0
   }
 }
