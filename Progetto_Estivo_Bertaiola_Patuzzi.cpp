@@ -17,14 +17,17 @@ using json = nlohmann::json;
 #define FILE_SALVATAGGIO_DEAFULT = "salvataggio.json"
 
 
-void errore(String s){
+void errore(string s){
 	cout << "\033[31m" << s << "\033[0m" << endl;
 }
-void info(String s){
+void info(string s){
 	cout << "\033[43;1m" << s << "\033[0m" << endl;
 }
-void racconto(String s){
-	cout << s << "\033[0m" << endl;
+void titolo(string s){
+	cout << "\033[0;3;4m" << s << "\033[0m" << endl;
+}
+void racconto(string s){
+	cout << "\033[0m" << s << endl;
 }
 
 class PersonaggioBase {
@@ -174,14 +177,14 @@ struct nemico {
 };
 
 //statistiche del nemico 
-class Nemico: PersonaggioBase{
+class Nemico: public PersonaggioBase{
 	protected:
 		unsigned int danno; //danno base
 		unsigned int cure; //num pozioni nel inventario
 	
 	public:
 		Nemico(){
-			name = "Cattivone";
+			nome = "Cattivone";
 			salute = 100;
 			agilita = 100;
 			fortuna = 0;
@@ -204,7 +207,7 @@ class Nemico: PersonaggioBase{
 				unsigned int moneteN,
 				unsigned int dannoN,
 				unsigned int cureN){
-			name = nomeN;
+			nome = nomeN;
 			salute = saluteN;
 			agilita = agilitaN;
 			fortuna = fortunaN;
@@ -282,7 +285,7 @@ struct recPlayer{
 };
 
 //struct che contiene tutte le informazioni sul giocatore
-class RecPlayer: PersonaggioBase {
+class RecPlayer: public PersonaggioBase {
 	private:
 		unsigned short numero_segreto;
 		unsigned short numero_minatore;
@@ -324,7 +327,7 @@ class RecPlayer: PersonaggioBase {
 
 	public:
 		RecPlayer(){
-			name = "IlSalvatore";
+			nome = "IlSalvatore";
 			maxsalute = 10;
 			salute = 10;
 			forza = 1;
@@ -354,7 +357,7 @@ class RecPlayer: PersonaggioBase {
 			vescovo_frase = 1;
 			fabbro_frase = 1;
 			
-			setNumeriSegreti()
+			setNumeriSegreti();
 			gioco_finito = false;
 		}
 		RecPlayer(string nomeR,
@@ -378,7 +381,7 @@ class RecPlayer: PersonaggioBase {
 				unsigned short minatore_fraseR,
 				unsigned short vescovo_fraseR, 
 				unsigned short fabbro_fraseR){
-			name = nomeR;
+			nome = nomeR;
 			salute = saluteR;
 			agilita = agilitaR;
 			fortuna = fortunaR;
@@ -480,7 +483,7 @@ class RecPlayer: PersonaggioBase {
 			if (s != ""){
 				nome_spada = s;
 			} else {
-				errore("Errore, nome spada vuoto")
+				errore("Errore, nome spada vuoto");
 			}
 		}
 		string getNomeSpada(){
@@ -502,7 +505,7 @@ class RecPlayer: PersonaggioBase {
 			if (s != ""){
 				nome_armatura = s;
 			} else {
-				errore("Errore, nome armatura vuoto")
+				errore("Errore, nome armatura vuoto");
 			}
 		}
 		string getNomeArmatura(){
@@ -535,7 +538,7 @@ class RecPlayer: PersonaggioBase {
 			if (s != ""){
 				zona = s;
 			} else {
-				errore("Errore, nome zona vuoto")
+				errore("Errore, nome zona vuoto");
 			}
 		}
 		string getZona(){
@@ -597,7 +600,8 @@ class RecPlayer: PersonaggioBase {
 
 		//stampa statistiche personaggio
 		void infoPersonaggio(){
-			racconto()
+			racconto("Presentati agli ospiti...");
+
 			cout<<"Nome: "<<nome<<endl;
 			cout<<"Salute disponibile: "<<salute<<endl;
 			cout<<"Salute massima: "<<maxsalute<<endl;
@@ -668,16 +672,15 @@ void combattimento(nemico &enemy, recPlayer &player, int difficolta_dungeon);
 
 /// TODO: mostrare statistiche ogni turno
 class Combattimento {
-	private:
+	protected:
 		RecPlayer personaggio;
-		Nemico nemico
+		Nemico nemico;
 		bool fuga;
 		bool ripeti;
 
 	public:
-		Combattimento(RecPlayer player){
-			personaggio = player;
-			nemico = NULL;
+		Combattimento(RecPlayer playerC){
+			personaggio = playerC;
 			fuga = false;
 			ripeti = false;
 		};
@@ -685,25 +688,37 @@ class Combattimento {
 		void iniziaCombattimento(int difficolta_dungeon){
 			nemico = selezioneMostro(difficolta_dungeon, personaggio.getZona());
 
-			while(player.isAlive() && nemico.isAlive()){
+			while(personaggio.isAlive() && nemico.isAlive()){
 				if(firstTurn()){
 					/// TODO: Implementare il turno del player 
 				} else {
 					/// TODO: Implementare il turno del player 
 				}
-				statistiche_combattimento(nemico, personaggio);
+				stampaStatistiche(nemico, personaggio);
 			}
 
 		}
-		Nemico selezioneMostro(int difficolta_dungeon, String zona){
+		Nemico selezioneMostro(int difficolta_dungeon, string zona){
 			/// TODO: Implentare nemico secondo la zona, usare json
 			Nemico enemy;
+			return enemy;
 		}
 
 		bool firstTurn(){
 			return personaggio.getAgilita() >= nemico.getAgilita();
 		}
 
+		void stampaStatistiche(Nemico enemy, RecPlayer player){
+			titolo("\t\t\tStatistiche combattimento");
+			cout << player.getNome() <<"\t\t"<< enemy.getNome() <<endl;
+			cout << "salute: " << player.getSalute() <<"\tsalute: "<< enemy.getSalute() <<endl;
+			cout << "danno: " << player.getForza() + player.getDannoSpada() << "\tdanno: "<<enemy.getDanno() <<endl;
+			cout << "difesa: " << player.getDifesaArmatura() <<"\tdifesa: "<<endl;
+			cout << "agilita': " << player.getAgilita() <<"\tagilita': "<< enemy.getAgilita() <<endl;
+			cout << "fortuna: " << player.getFortuna() <<"\tfortuna: "<< enemy.getFortuna() <<endl;
+			cout << "arma: " << player.getNomeSpada() <<endl;
+			cout << "armatura " << player.getNomeArmatura() << endl << endl;
+		}
 };
 
 
@@ -1144,7 +1159,7 @@ void npc_parla(string nome_npc, int &qn_frase){
     }
 	ifstream MyReadFile(apertura_file);//si apre il file in lettura
 	if(!MyReadFile.is_open()){
-		error("Non ho trovato il file");
+		//error("Non ho trovato il file");
 	}
 	for (int i =0; i<qn_frase; i++){
 		getline(MyReadFile, frase);//si passa ogni riga fino ad arrivare alla frase che serve che e' la variabiel qn_frase
