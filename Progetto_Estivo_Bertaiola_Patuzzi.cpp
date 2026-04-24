@@ -9,7 +9,7 @@ using namespace std;
 using json = nlohmann::json;
 
 #define LVLMAX_SALUTE 20
-#define LVLMAX_AGILITA 20       
+#define LVLMAX_AGILITA 20
 #define LVLMAX_FORTUNA 25
 #define LVLMAX_FORZA 3
 #define LVLMAX_SPIRITUALITA 14
@@ -316,7 +316,7 @@ class RecPlayer: PersonaggioBase {
 		unsigned int pozione_curativa;
 		/// TODO: implementare zone da poter espandere
 		string zona;
-		unsigned short minatore_frase; //interazione minatore
+		unsigned short minatore_frase;	//interazione minatore
 		unsigned short vescovo_frase;	//interazione vescovo
 		unsigned short fabbro_frase;	//interazione fabbro
 		
@@ -377,8 +377,7 @@ class RecPlayer: PersonaggioBase {
 				string zonaR,
 				unsigned short minatore_fraseR,
 				unsigned short vescovo_fraseR, 
-				unsigned short fabbro_fraseR,
-				bool gioco_finitoR){
+				unsigned short fabbro_fraseR){
 			name = nomeR;
 			salute = saluteR;
 			agilita = agilitaR;
@@ -401,8 +400,8 @@ class RecPlayer: PersonaggioBase {
 			minatore_frase = minatore_fraseR;
 			vescovo_frase = vescovo_fraseR;
 			fabbro_frase = fabbro_fraseR;
-			setNumeriSegreti()
-			gioco_finito = gioco_finitoR;
+			setNumeriSegreti();
+			gioco_finito = false;
 		}
 
 		// OVERRIDE
@@ -481,8 +480,7 @@ class RecPlayer: PersonaggioBase {
 			if (s != ""){
 				nome_spada = s;
 			} else {
-				/// TODO: LOG
-				// ERRORE NOME/ NOME SPADA
+				errore("Errore, nome spada vuoto")
 			}
 		}
 		string getNomeSpada(){
@@ -504,8 +502,7 @@ class RecPlayer: PersonaggioBase {
 			if (s != ""){
 				nome_armatura = s;
 			} else {
-				/// TODO: LOG
-				// ERRORE NOME/ NOME ARMATURA
+				errore("Errore, nome armatura vuoto")
 			}
 		}
 		string getNomeArmatura(){
@@ -538,8 +535,7 @@ class RecPlayer: PersonaggioBase {
 			if (s != ""){
 				zona = s;
 			} else {
-				/// TODO: LOG
-				// ERRORE NOME/ NOME ZONA
+				errore("Errore, nome zona vuoto")
 			}
 		}
 		string getZona(){
@@ -622,8 +618,6 @@ class RecPlayer: PersonaggioBase {
 			cout<<"Diamante :"<<diamante<<endl;
 			cout<<"Monete : "<<monete<<endl;
 		}
-
-
 };
 
 /*menu*/
@@ -673,24 +667,23 @@ void combattimento(nemico &enemy, recPlayer &player, int difficolta_dungeon);
 
 
 /// TODO: mostrare statistiche ogni turno
-class Combattimento
-{
+class Combattimento {
 	private:
 		RecPlayer personaggio;
 		Nemico nemico
 		bool fuga;
 		bool ripeti;
+
 	public:
-		Combattimento(RecPlayer &player){
+		Combattimento(RecPlayer player){
 			personaggio = player;
 			nemico = NULL;
+			fuga = false;
+			ripeti = false;
 		};
-		~Combattimento();
 
 		void iniziaCombattimento(int difficolta_dungeon){
 			nemico = selezioneMostro(difficolta_dungeon, personaggio.getZona());
-			fuga=false;
-			ripeti=false
 
 			while(player.isAlive() && nemico.isAlive()){
 				if(firstTurn()){
@@ -700,9 +693,10 @@ class Combattimento
 				}
 				statistiche_combattimento(nemico, personaggio);
 			}
-			
+
 		}
-		Nemico selezioneMostro(int difficolta_dungeon, string zona){
+		Nemico selezioneMostro(int difficolta_dungeon, String zona){
+			/// TODO: Implentare nemico secondo la zona, usare json
 			Nemico enemy;
 		}
 
@@ -710,7 +704,6 @@ class Combattimento
 			return personaggio.getAgilita() >= nemico.getAgilita();
 		}
 
-		
 };
 
 
