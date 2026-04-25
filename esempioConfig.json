@@ -25,19 +25,20 @@
   },
   "personaggi": {
     "_comment": "C-xxxx = NPC, N-xxxx = Nemico",
+    "_comment2": "nei nemici i valori di proprieta son di 'range', solo per darsi un idea",
     "C-Minatore":{
       "nome": "Minatore baffuto",
       "quest":[
         {
             "id": 1,
             "descrizione":"portami 5 banane",
+            "oro": 5,
             "discorso":["Ciao viandante...", "mi servirebbe proprio un favore..."]
         },
         {}
       ]
     },
     "N-Drago":{
-        "_comment": "i valori di proprieta son di 'range', solo per darsi un idea",
         "nome": "Drago rosso occhi viola super",
         "salute": 2,
         "agilita": 2,

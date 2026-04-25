@@ -242,6 +242,21 @@ class Nemico: public PersonaggioBase{
 		unsigned int getCure(){
 			return cure;
 		}
+
+		json toJson(){
+			return {
+				{"nome", getNome() },
+				{"salute", getSalute() },
+				{"agilita", getAgilita() },
+				{"fortuna", getFortuna() },
+				{"ferro", getFerro() },
+				{"oro", getOro() },
+				{"diamanti", getDiamante() },
+				{"monete", getMonete() },
+				{"danno", getDanno() },
+				{"cure", getCure() }
+			};
+		}
 };
 
 //struct che contiene tutte le informazioni sul giocatore
@@ -358,29 +373,21 @@ class RecPlayer: public PersonaggioBase {
 			agilita = 5;
 			fortuna = 5;
 			spiritualita = 0;
-
 			ferro = 0;
 			oro = 0;
 			diamante = 0;
 			monete = 0;
-			
-			
 			livello = maxsalute + forza + agilita + fortuna + spiritualita;
 			xp = 0;
-			
 			nome_spada = "spada arruginita";
 			danno_spada = 0;
 			nome_armatura = "armatura in pelle";
 			difesa_armatura = 0;
-			
 			pozione_curativa = 0;
-			
 			zona = "dungeon_boss";
-			
 			minatore_frase = 1;
 			vescovo_frase = 1;
 			fabbro_frase = 1;
-			
 			setNumeriSegreti();
 			gioco_finito = false;
 		}
@@ -682,6 +689,135 @@ class RecPlayer: public PersonaggioBase {
 				{"vescovo_frase", getVescovoFrase() },
 				{"fabbo_frase", getFabbroFrase() },
 				{"fine", isGiocoFinito() }
+			};
+		}
+};
+
+class Quest {
+	protected:
+		unsigned short id;
+		string descrizione;
+		unsigned short ferro;
+		unsigned short oro;
+		unsigned short diamante;
+		unsigned short moneta;
+		string* discorso;
+
+	public:
+		Quest(unsigned short idQ,
+			string descrizioneQ,
+			unsigned short ferroQ,
+			unsigned short oroQ,
+			unsigned short diamanteQ,
+			unsigned short monetaQ,
+			string* discorsoQ){
+				id = idQ;
+				descrizione = descrizioneQ;
+				ferro = ferroQ;
+				oro = oroQ;
+				diamante = diamanteQ;
+				moneta = monetaQ;
+				discorso = discorsoQ;
+		}
+
+		void setId(unsigned short idQ){
+			id = idQ;
+		}
+		unsigned short getId(){
+			return id;
+		}
+
+		void setFerro(unsigned short ferroQ){
+			ferro = ferroQ;
+		}
+		unsigned short getFerro(){
+			return ferro;
+		}
+
+		void setOro(unsigned short oroQ){
+			oro = oroQ;
+		}
+		unsigned short getOro(){
+			return oro;
+		}
+
+		void setDiamante(unsigned short diamanteQ){
+			diamante = diamanteQ;
+		}
+		unsigned short getDiamante(){
+			return diamante;
+		}
+
+		void setMoneta(unsigned short monetaQ){
+			moneta = monetaQ;
+		}
+		unsigned short getMoneta(){
+			return moneta;
+		}
+
+		void setDiscorso(string* discorsoQ){
+			discorso = discorsoQ;
+		}
+		string* getDiscorso(){
+			return discorso;
+		}
+
+		json toJson(){
+			json a = {
+				{"id", getId() },
+				{"ferro", getFerro() },
+				{"oro", getOro() },
+				{"diamante", getDiamante() },
+				{"moneta", getFerro() }
+			};
+			string* listaDisc = getDiscorso();
+			/// TODO: capire come trasformare da array di stringhe a json
+			//for(unsigned short i=0; i < listaDisc->length; i++){
+			//	a["discorso"][i] = listaDisc[i];
+			//}
+			return a;
+		}
+};
+
+class NPC: public PersonaggioBase{
+	protected:
+		string id;
+		string nome;
+		Quest* listaQuest;
+		
+	public:
+		NPC(string idN, string nomeN, Quest* listaQuestN){
+			id = idN;
+			nome = nomeN;
+			listaQuest = listaQuestN;
+		}
+
+		void setId(string idN){
+			id = idN;
+		}
+		string getId(){
+			return id;
+		}
+
+		void setNome(string nomeN){
+			nome = nomeN;
+		}
+		string getNome(){
+			return nome;
+		}
+
+		void setListaQuest(Quest* listaQuestN){
+			listaQuest = listaQuestN;
+		}
+		Quest* getListaQuest(){
+			return listaQuest;
+		}
+
+		json toJson(){
+			return {
+				{"id", getId()},
+				{"nome", getNome()},
+				{"quest", getListaQuest()->toJson()}
 			};
 		}
 };
@@ -1950,10 +2086,11 @@ int main(){
 
 //NEW MAIN
 int main(){
-	cout<<"Loading game...."<<endl;
-	Nemico* enemy = new Nemico();
-	RecPlayer* player = new RecPlayer();;
+	cout << "Caricamento..." << endl;
+	auto player = new RecPlayer();
 	srand(time(NULL)); // non so se sia la giusta posizione
+
+	
 
 	return 0;
 }
