@@ -755,27 +755,11 @@ class Quest {
 			return moneta;
 		}
 
-		void setDiscorso(string* discorsoQ){
-			discorso = discorsoQ;
-		}
+		//void setDiscorso(string* discorsoQ){
+		//	discorso = discorsoQ;
+		//}
 		string* getDiscorso(){
 			return discorso;
-		}
-
-		json toJson(){
-			json a = {
-				{"id", getId() },
-				{"ferro", getFerro() },
-				{"oro", getOro() },
-				{"diamante", getDiamante() },
-				{"moneta", getFerro() }
-			};
-			string* listaDisc = getDiscorso();
-			/// TODO: capire come trasformare da array di stringhe a json
-			//for(unsigned short i=0; i < listaDisc->length; i++){
-			//	a["discorso"][i] = listaDisc[i];
-			//}
-			return a;
 		}
 };
 
@@ -806,19 +790,8 @@ class NPC: public PersonaggioBase{
 			return nome;
 		}
 
-		void setListaQuest(Quest* listaQuestN){
-			listaQuest = listaQuestN;
-		}
 		Quest* getListaQuest(){
 			return listaQuest;
-		}
-
-		json toJson(){
-			return {
-				{"id", getId()},
-				{"nome", getNome()},
-				{"quest", getListaQuest()->toJson()}
-			};
 		}
 };
 
