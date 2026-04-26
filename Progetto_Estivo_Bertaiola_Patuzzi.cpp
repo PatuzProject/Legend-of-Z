@@ -26,7 +26,7 @@ void info(string s){
 	cout << "\033[43;1m" << s << "\033[0m" << endl;
 }
 void titolo(string s){
-	cout << "\033[0;3;4m" << s << "\033[0m" << endl;
+	cout << "\033[3;4m" << s << "\033[0m" << endl;
 }
 void racconto(string s){
 	cout << "\033[0m" << s << endl;
@@ -189,13 +189,16 @@ class Nemico: public PersonaggioBase{
 			salute = 100;
 			agilita = 100;
 			fortuna = 0;
-
 			ferro = 0;
 			oro = 0;
 			diamante = 0;
 			monete = 0;
 			danno = 100;
 			cure = 1;
+		}
+
+		Nemico(unsigned int difficolta){
+			/// TODO: Implentare nemico secondo la zona, usare json
 		}
 
 		Nemico(string nomeN,
@@ -850,15 +853,14 @@ class Combattimento {
 		bool ripeti;
 
 	public:
-		Combattimento(RecPlayer playerC){
+		Combattimento(RecPlayer playerC, Nemico nemicoC){
 			personaggio = playerC;
+			nemico = nemicoC;
 			fuga = false;
 			ripeti = false;
 		};
 
-		void iniziaCombattimento(int difficolta_dungeon){
-			nemico = selezioneMostro(difficolta_dungeon, personaggio.getZona());
-
+		void iniziaCombattimento(){
 			while(personaggio.isAlive() && nemico.isAlive()){
 				if(firstTurn()){
 					/// TODO: Implementare il turno del player 
@@ -867,12 +869,6 @@ class Combattimento {
 				}
 				stampaStatistiche(nemico, personaggio);
 			}
-
-		}
-		Nemico selezioneMostro(int difficolta_dungeon, string zona){
-			/// TODO: Implentare nemico secondo la zona, usare json
-			Nemico enemy;
-			return enemy;
 		}
 
 		bool firstTurn(){
@@ -1040,7 +1036,6 @@ void salvataggio(recPlayer player){//passiamo la struct player per mettre tutti 
 bool caricamentoJSON(){
 	info("Stiamo caricando la partita...");
 	system("pause");
-
 	///TODO: valutare se richiedere il nome del file da caricare
 	ifstream File(FILE_SALVATAGGIO_DEAFULT);
 	if (!File.is_open()) {
@@ -1061,8 +1056,10 @@ bool salvataggioJSON(){
 	FileSalvataggio.close();
 	if(!FileSalvataggio) {
 		errore("Errore salvataggio partita!");
+		return false;
 	} else {
 		info("Salvataggio partita concluso con successo.");
+		return true;
 	}
 }
 
@@ -2061,6 +2058,8 @@ int main(){
 int main(){
 	cout << "Caricamento..." << endl;
 	auto player = new RecPlayer();
+	auto nemico = new Nemico(1);
+	
 	srand(time(NULL)); // non so se sia la giusta posizione
 
 	
