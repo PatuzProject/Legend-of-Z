@@ -161,7 +161,7 @@ class Arma: public Oggetto {
 		}
 
 		Arma(){
-			nome = "";
+			nome = "Spada moscia";
 			prezzo_ferro = 0;
 			prezzo_oro = 0;
 			prezzo_diamante = 0;
@@ -254,11 +254,12 @@ class Pozione: public Consumabile{
 			quantita = 0;
 
 			efficacia = 0;
+			enum tipo_pozione tipoPoz = CURA;
 		}
 
 		Pozione(string nomeC, unsigned short prezzo_FerroC,unsigned short prezzo_oroC,
 				unsigned short prezzo_diamanteC, unsigned short prezzo_moneteC, unsigned short quantitaC,
-				unsigned short efficaciaC){
+				unsigned short efficaciaC, enum tipo_pozione tipoPozC){
 			nome = nomeC;
 			prezzo_ferro = prezzo_FerroC;
 			prezzo_oro = prezzo_oroC;
@@ -267,6 +268,7 @@ class Pozione: public Consumabile{
 			quantita = quantitaC;
 
 			efficacia = efficaciaC;
+			enum tipo_pozione tipoPoz = tipoPozC;
 		}
 
 	protected:
@@ -419,6 +421,242 @@ struct nemico {
 	unsigned int monete = 0;
 };
 
+//struct che contiene tutte le informazioni sul giocatore
+struct recPlayer{
+	string nome = "";
+
+	//statistiche
+	int maxsalute = 10; //max 20
+	int salute = 10; //max 20
+	int forza = 1; //max 3
+	int agilita = 5; //max 20
+
+	//modificatori 
+	int fortuna = 5; //max 25  possibilita' di ricevere monete doppie
+	int spiritualita = 0; //max 14 utilizzo per tenere armi di un certo livello 
+	int livello = maxsalute + forza + agilita + fortuna + spiritualita;
+	int xp = 0;
+	//item
+	string nome_spada = "spada arruginita"; // le spade aumentano i danni
+	int danno_spada = 0;
+	string nome_armatura = "armatura in pelle";
+	int difesa_armatura = 0;
+	int pozione_curativa = 0;
+	string zona = "dungeon_boss";
+	
+	//item quest
+	int ferro = 0;
+	int oro = 0;
+	int diamante = 0;
+	int monete = 0;
+	
+	//interazione npc
+	int	minatore_frase = 1;
+	int vescovo_frase = 1;
+	int fabbro_frase = 1;
+	
+	int numero_segreto = 0;
+	int numero_vescovo = 0;
+	int numero_minatore = 0;
+	int numero_fabbro = 0;
+	bool gioco_finito = false;
+};
+
+class Quest {
+	protected:
+		unsigned short id;
+		string descrizione;
+		unsigned short ferro;
+		unsigned short oro;
+		unsigned short diamante;
+		unsigned short moneta;
+		string* discorso;
+
+	public:
+		Quest(unsigned short idQ,
+			string descrizioneQ,
+			unsigned short ferroQ,
+			unsigned short oroQ,
+			unsigned short diamanteQ,
+			unsigned short monetaQ,
+			string* discorsoQ){
+				id = idQ;
+				descrizione = descrizioneQ;
+				ferro = ferroQ;
+				oro = oroQ;
+				diamante = diamanteQ;
+				moneta = monetaQ;
+				discorso = discorsoQ;
+		}
+
+		void setId(unsigned short idQ){
+			id = idQ;
+		}
+		unsigned short getId(){
+			return id;
+		}
+
+		void setFerro(unsigned short ferroQ){
+			ferro = ferroQ;
+		}
+		unsigned short getFerro(){
+			return ferro;
+		}
+
+		void setOro(unsigned short oroQ){
+			oro = oroQ;
+		}
+		unsigned short getOro(){
+			return oro;
+		}
+
+		void setDiamante(unsigned short diamanteQ){
+			diamante = diamanteQ;
+		}
+		unsigned short getDiamante(){
+			return diamante;
+		}
+
+		void setMoneta(unsigned short monetaQ){
+			moneta = monetaQ;
+		}
+		unsigned short getMoneta(){
+			return moneta;
+		}
+
+		//void setDiscorso(string* discorsoQ){
+		//	discorso = discorsoQ;
+		//}
+		string* getDiscorso(){
+			return discorso;
+		}
+};
+
+class NPC: public PersonaggioBase{
+	protected:
+		string id;
+		string nome;
+		vector<Quest> listaQuest;
+		
+	public:
+		NPC(string idN, string nomeN, vector<Quest> listaQuestN){
+			id = idN;
+			nome = nomeN;
+			listaQuest = listaQuestN;
+		}
+
+		void setId(string idN){
+			id = idN;
+		}
+		string getId(){
+			return id;
+		}
+
+		void setNome(string nomeN){
+			nome = nomeN;
+		}
+		string getNome(){
+			return nome;
+		}
+
+		void addQuest(const Quest& questZ) {
+			listaQuest.push_back(questZ);
+		}
+		Quest& getParent(size_t index) {
+			if (index >= listaQuest.size()) {
+				throw out_of_range("listaQuest::get: index out of range");
+			}
+			return listaQuest[index];
+    	}
+		vector<Quest>& getAllParent() {
+			return listaQuest;
+		}
+
+};
+
+class Zona {
+	protected:
+		string nome; //nome univoco, usato come 'id'
+		string descrizione;
+		vector<NPC> npc;
+		unsigned short difficolta; // indice di difficolta
+		
+		vector<Zona> children; // lista delle destinazioni possibili da quella zona
+		vector<Zona> parent; // lista dei possibili padri
+		
+	public:
+		void setNome(string nomeZ){
+			nome = nomeZ;
+		}
+		string getNome(){
+			return nome;
+		}
+
+		void setDescrizione(string descrizioneZ){
+			descrizione = descrizioneZ;
+		}
+		string getNome(){
+			return descrizione;
+		}
+
+		void addNPC(const NPC& npcZ) {
+			npc.push_back(npcZ);
+		}
+		NPC& getNPC(size_t index) {
+			if (index >= npc.size()) {
+				throw out_of_range("npc::get: index out of range");
+			}
+			return npc[index];
+    	}
+		vector<NPC>& getAllNPC() {
+			return npc;
+		}
+
+		void setDifficolta(unsigned short difficoltaZ){
+			difficolta = difficoltaZ;
+		}
+		unsigned short getDifficolta(){
+			return difficolta;
+		}
+
+		void addChildren(const Zona& childrenZ) {
+			children.push_back(childrenZ);
+		}
+		Zona& getChildred(size_t index) {
+			if (index >= children.size()) {
+				throw out_of_range("children::get: index out of range");
+			}
+			return children[index];
+    	}
+		vector<Zona>& getAllChildren() {
+			return children;
+		}
+		
+		void addParent(const Zona& parentZ) {
+			parent.push_back(parentZ);
+		}
+		Zona& getParent(size_t index) {
+			if (index >= parent.size()) {
+				throw out_of_range("parent::get: index out of range");
+			}
+			return parent[index];
+    	}
+		vector<Zona>& getAllParent() {
+			return parent;
+		}
+
+		Zona(){}
+		Zona(string nomeZ, string descrizioneZ, vector<NPC> npcZ, unsigned short difficoltaZ,
+				vector<Zona> childrenZ, vector<Zona> parentZ){
+			nome = nomeZ;
+			descrizione = descrizioneZ;
+			npc = npcZ;
+			difficolta = difficoltaZ;
+			children = childrenZ;
+			parent = parentZ;
+		}
+};
+
 class Nemico: public PersonaggioBase{
 	protected:
 		unsigned int danno; //danno base
@@ -503,47 +741,6 @@ class Nemico: public PersonaggioBase{
 		}
 };
 
-//struct che contiene tutte le informazioni sul giocatore
-struct recPlayer{
-	string nome = "";
-
-	//statistiche
-	int maxsalute = 10; //max 20
-	int salute = 10; //max 20
-	int forza = 1; //max 3
-	int agilita = 5; //max 20
-
-	//modificatori 
-	int fortuna = 5; //max 25  possibilita' di ricevere monete doppie
-	int spiritualita = 0; //max 14 utilizzo per tenere armi di un certo livello 
-	int livello = maxsalute + forza + agilita + fortuna + spiritualita;
-	int xp = 0;
-	//item
-	string nome_spada = "spada arruginita"; // le spade aumentano i danni
-	int danno_spada = 0;
-	string nome_armatura = "armatura in pelle";
-	int difesa_armatura = 0;
-	int pozione_curativa = 0;
-	string zona = "dungeon_boss";
-	
-	//item quest
-	int ferro = 0;
-	int oro = 0;
-	int diamante = 0;
-	int monete = 0;
-	
-	//interazione npc
-	int	minatore_frase = 1;
-	int vescovo_frase = 1;
-	int fabbro_frase = 1;
-	
-	int numero_segreto = 0;
-	int numero_vescovo = 0;
-	int numero_minatore = 0;
-	int numero_fabbro = 0;
-	bool gioco_finito = false;
-};
-
 class RecPlayer: public PersonaggioBase {
 	private:
 		unsigned short numero_segreto;
@@ -590,15 +787,19 @@ class RecPlayer: public PersonaggioBase {
 		unsigned int livello;
 		unsigned int xp;
 
-		/// TODO: creare class/struct spada
 		string nome_spada; // le spade aumentano i danni
 		unsigned int danno_spada;
+		/// TODO: implementare class/struct spada
+		//Arma armaEquipaggiata;
 
-		/// TODO: creare class/struct armatura
 		string nome_armatura;
 		unsigned int difesa_armatura;
+		/// TODO: implementare class/struct armatura
+		//Armatura armaturaEquipaggiata;
 
+		/// TODO: implementare class/struct pozioni
 		unsigned int pozione_curativa;
+		//vector <Pozione> pozioni_disponibili;
 		/// TODO: implementare zone da poter espandere
 		string zona;
 		unsigned short minatore_frase;	//interazione minatore
@@ -624,9 +825,11 @@ class RecPlayer: public PersonaggioBase {
 			xp = 0;
 			nome_spada = "spada arruginita";
 			danno_spada = 0;
+			//armaEquipaggiata = *(new Arma());
 			nome_armatura = "armatura in pelle";
 			difesa_armatura = 0;
-			pozione_curativa = 0;
+			//armaturaEquipaggiata = *(new Armatura());
+			//pozione_curativa = 0;
 			zona = "dungeon_boss";
 			minatore_frase = 1;
 			vescovo_frase = 1;
@@ -646,12 +849,14 @@ class RecPlayer: public PersonaggioBase {
 				unsigned int forzaR, 
 				unsigned int spriritualitaR,
 				unsigned int xpR,
+				////// DA CAMBIARE QUA SOTTO
 				string nome_spadaR,
 				unsigned int danno_spadaR,
 				string nome_armaturaR,
 				unsigned int difesa_armaturaR,
 				unsigned int pozione_curativaR,
 				string zonaR,
+				////
 				unsigned short minatore_fraseR,
 				unsigned short vescovo_fraseR, 
 				unsigned short fabbro_fraseR){
@@ -668,12 +873,19 @@ class RecPlayer: public PersonaggioBase {
 			maxsalute = maxsaluteR;
 			livello = maxsalute + forza + agilita + fortuna + spiritualita;
 			xp = xpR;
+
 			nome_spada = nome_spadaR;
 			danno_spada = danno_spadaR;
+			//armaEquipaggiata = *(new Arma());
+
 			nome_armatura = nome_armaturaR;
 			difesa_armatura = difesa_armaturaR;
+			//armaturaEquipaggiata = *(new Armatura());
+
 			pozione_curativa = pozione_curativaR;
 			zona = zonaR;
+
+
 			minatore_frase = minatore_fraseR;
 			vescovo_frase = vescovo_fraseR;
 			fabbro_frase = fabbro_fraseR;
@@ -936,150 +1148,6 @@ class RecPlayer: public PersonaggioBase {
 		}
 };
 
-class Quest {
-	protected:
-		unsigned short id;
-		string descrizione;
-		unsigned short ferro;
-		unsigned short oro;
-		unsigned short diamante;
-		unsigned short moneta;
-		string* discorso;
-
-	public:
-		Quest(unsigned short idQ,
-			string descrizioneQ,
-			unsigned short ferroQ,
-			unsigned short oroQ,
-			unsigned short diamanteQ,
-			unsigned short monetaQ,
-			string* discorsoQ){
-				id = idQ;
-				descrizione = descrizioneQ;
-				ferro = ferroQ;
-				oro = oroQ;
-				diamante = diamanteQ;
-				moneta = monetaQ;
-				discorso = discorsoQ;
-		}
-
-		void setId(unsigned short idQ){
-			id = idQ;
-		}
-		unsigned short getId(){
-			return id;
-		}
-
-		void setFerro(unsigned short ferroQ){
-			ferro = ferroQ;
-		}
-		unsigned short getFerro(){
-			return ferro;
-		}
-
-		void setOro(unsigned short oroQ){
-			oro = oroQ;
-		}
-		unsigned short getOro(){
-			return oro;
-		}
-
-		void setDiamante(unsigned short diamanteQ){
-			diamante = diamanteQ;
-		}
-		unsigned short getDiamante(){
-			return diamante;
-		}
-
-		void setMoneta(unsigned short monetaQ){
-			moneta = monetaQ;
-		}
-		unsigned short getMoneta(){
-			return moneta;
-		}
-
-		//void setDiscorso(string* discorsoQ){
-		//	discorso = discorsoQ;
-		//}
-		string* getDiscorso(){
-			return discorso;
-		}
-};
-
-class NPC: public PersonaggioBase{
-	protected:
-		string id;
-		string nome;
-		Quest* listaQuest;
-		
-	public:
-		NPC(string idN, string nomeN, Quest* listaQuestN){
-			id = idN;
-			nome = nomeN;
-			listaQuest = listaQuestN;
-		}
-
-		void setId(string idN){
-			id = idN;
-		}
-		string getId(){
-			return id;
-		}
-
-		void setNome(string nomeN){
-			nome = nomeN;
-		}
-		string getNome(){
-			return nome;
-		}
-
-		Quest* getListaQuest(){
-			return listaQuest;
-		}
-};
-
-class Zona {
-	protected:
-		string nome; //nome univoco, usato come 'id'
-		string descrizione;
-		NPC** npc;
-		unsigned short difficolta; // indice di difficolta
-		
-		Zona** childs; // lista delle destinazioni possibili da quella zona
-		Zona* parent; // unico padre
-		
-	public:
-		void setNome(string nomeZ){
-			nome = nomeZ;
-		}
-		string getNome(){
-			return nome;
-		}
-
-		void setDescrizione(string descrizioneZ){
-			descrizione = descrizioneZ;
-		}
-		string getNome(){
-			return descrizione;
-		}
-
-		/// TODO: create get e set della lista NPC
-
-		void setDifficolta(unsigned short difficoltaZ){
-			difficolta = difficoltaZ;
-		}
-		unsigned short getDifficolta(){
-			return difficolta;
-		}
-
-		/// TODO: create get e set della lista childs
-		/// TODO: create get e set del parent
-
-		Zona(){
-
-		}
-};
-
 /*menu*/
 int menu_scelte(nemico &enemy, recPlayer &player);
 int open_menu(nemico &enemy, recPlayer &player);
@@ -1124,7 +1192,6 @@ void attacco_nemico(nemico &enemy, recPlayer &player);
 void cura_nemico(nemico &enemy, recPlayer &player);
 void turno_nemico(nemico &enemy, recPlayer &player, int difficolta_dungeon,int fuga);
 void combattimento(nemico &enemy, recPlayer &player, int difficolta_dungeon);
-
 
 
 class Combattimento {
