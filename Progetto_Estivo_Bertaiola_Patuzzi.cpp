@@ -40,6 +40,240 @@ void racconto(string s){
 	cout << "\033[0m" << s << endl;
 }
 
+class Oggetto {
+	protected:
+		string nome;
+		unsigned short prezzo_ferro;
+		unsigned short prezzo_oro;
+		unsigned short prezzo_diamante;
+		unsigned short prezzo_monete;
+	public:
+		void setNome(string nomeO){
+			nome = nomeO;
+		}
+		string getNome(){
+			return nome;
+		}
+
+		void setPrezzoFerro(unsigned short prezzo_ferroO){
+			prezzo_ferro = prezzo_ferroO;
+		}
+		unsigned short getPrezzoFerro(){
+			return prezzo_ferro;
+		}
+
+		void setPrezzoOro(unsigned short prezzo_oroO){
+			prezzo_oro = prezzo_oroO;
+		}
+		unsigned short getPrezzoOro(){
+			return prezzo_oro;
+		}
+
+		void setPrezzoDiamante(unsigned short prezzo_diamanteO){
+			prezzo_diamante = prezzo_diamanteO;
+		}
+		unsigned short getPrezzoDiamante(){
+			return prezzo_diamante;
+		}
+
+		void setPrezzoMonete(unsigned short prezzo_moneteO){
+			prezzo_monete = prezzo_moneteO;
+		}
+		unsigned short getPrezzoMonete(){
+			return prezzo_monete;
+		}
+
+		void toString(){
+			/// TODO: completare il toString()
+		}
+
+		Oggetto(){
+			nome = "";
+			prezzo_ferro = 0;
+			prezzo_oro = 0;
+			prezzo_diamante = 0;
+			prezzo_monete = 0;
+		}
+
+		Oggetto(string nomeO, unsigned short prezzo_ferroO,unsigned short prezzo_oroO,
+				unsigned short prezzo_diamanteO, unsigned short prezzo_moneteO){
+			nome = nomeO;
+			prezzo_ferro = prezzo_ferroO;
+			prezzo_oro = prezzo_oroO;
+			prezzo_diamante = prezzo_diamanteO;
+			prezzo_monete = prezzo_moneteO;
+		}
+
+};
+
+class Armatura: public Oggetto {
+	protected:
+		unsigned short difesa;
+
+	public:
+		void setDifesa(unsigned short difesaA){
+			difesa = difesaA;
+		}
+		unsigned short getDifesa(){
+			return difesa;
+		}
+
+		void toString(){
+			/// TODO: completare il toString()
+		}
+
+		Armatura(){
+			nome = "";
+			prezzo_ferro = 0;
+			prezzo_oro = 0;
+			prezzo_diamante = 0;
+			prezzo_monete = 0;
+
+			difesa = 0;
+		}
+
+		Armatura(string nomeA, unsigned short prezzo_ferroA,unsigned short prezzo_oroA,
+				unsigned short prezzo_diamanteA, unsigned short prezzo_moneteA, unsigned short difesaA){
+			nome = nomeA;
+			prezzo_ferro = prezzo_ferroA;
+			prezzo_oro = prezzo_oroA;
+			prezzo_diamante = prezzo_diamanteA;
+			prezzo_monete = prezzo_moneteA;
+
+			difesa = difesaA;
+		}
+};
+
+class Arma: public Oggetto {
+	protected:
+		unsigned short attacco;
+
+	public:
+		void setAttacco(unsigned short attaccoA){
+			attacco = attaccoA;
+		}
+		unsigned short getAttacco(){
+			return attacco;
+		}
+
+		void toString(){
+			/// TODO: completare il toString()
+		}
+
+		Arma(){
+			nome = "";
+			prezzo_ferro = 0;
+			prezzo_oro = 0;
+			prezzo_diamante = 0;
+			prezzo_monete = 0;
+
+			attacco = 0;
+		}
+
+		Arma(string nomeA, unsigned short prezzo_ferroA,unsigned short prezzo_oroA,
+				unsigned short prezzo_diamanteA, unsigned short prezzo_moneteA, unsigned short attaccoA){
+			nome = nomeA;
+			prezzo_ferro = prezzo_ferroA;
+			prezzo_oro = prezzo_oroA;
+			prezzo_diamante = prezzo_diamanteA;
+			prezzo_monete = prezzo_moneteA;
+
+			attacco = attaccoA;
+		}
+};
+
+class Consumabile: public Oggetto {
+	protected:
+		unsigned short quantita;
+
+	public:
+		void setQuantita(unsigned short quantitaC){
+			quantita = quantitaC;
+		}
+		unsigned short getQuantita(){
+			return quantita;
+		}
+
+		void toString(){
+			/// TODO: completare il toString()
+		}
+
+		Consumabile(){
+			nome = "";
+			prezzo_ferro = 0;
+			prezzo_oro = 0;
+			prezzo_diamante = 0;
+			prezzo_monete = 0;
+
+			quantita = 0;
+		}
+
+		Consumabile(string nomeC, unsigned short prezzo_ferroC,unsigned short prezzo_oroC,
+				unsigned short prezzo_diamanteC, unsigned short prezzo_moneteC, unsigned short quantitaC){
+			nome = nomeC;
+			prezzo_ferro = prezzo_ferroC;
+			prezzo_oro = prezzo_oroC;
+			prezzo_diamante = prezzo_diamanteC;
+			prezzo_monete = prezzo_moneteC;
+
+			quantita = quantitaC;
+		}
+};
+
+class Pozione: public Consumabile{
+	public:
+		void setEfficacia(unsigned short efficaciaA){
+			efficacia = efficaciaA;
+		}
+		unsigned short getEfficacia(){
+			return efficacia;
+		}
+
+		enum tipo_pozione {
+			CURA,
+			DIFESA,
+			FORTUNA
+		};
+		void setTipoPozione(tipo_pozione tipoPozP){
+			tipoPoz = tipoPozP;
+		}
+		tipo_pozione getTipoPozione(){
+			return tipoPoz;
+		}
+
+		void toString(){
+			/// TODO: completare il toString()
+		}
+
+		Pozione(){
+			nome = "";
+			prezzo_ferro = 0;
+			prezzo_oro = 0;
+			prezzo_diamante = 0;
+			prezzo_monete = 0;
+			quantita = 0;
+
+			efficacia = 0;
+		}
+
+		Pozione(string nomeC, unsigned short prezzo_FerroC,unsigned short prezzo_oroC,
+				unsigned short prezzo_diamanteC, unsigned short prezzo_moneteC, unsigned short quantitaC,
+				unsigned short efficaciaC){
+			nome = nomeC;
+			prezzo_ferro = prezzo_FerroC;
+			prezzo_oro = prezzo_oroC;
+			prezzo_diamante = prezzo_diamanteC;
+			prezzo_monete = prezzo_moneteC;
+			quantita = quantitaC;
+
+			efficacia = efficaciaC;
+		}
+
+	protected:
+		unsigned short efficacia; //efficacia in %
+		tipo_pozione tipoPoz;
+};
+
 class PersonaggioBase {
 	protected:
 		string nome;
@@ -185,7 +419,6 @@ struct nemico {
 	unsigned int monete = 0;
 };
 
-//statistiche del nemico 
 class Nemico: public PersonaggioBase{
 	protected:
 		unsigned int danno; //danno base
@@ -311,7 +544,6 @@ struct recPlayer{
 	bool gioco_finito = false;
 };
 
-//struct che contiene tutte le informazioni sul giocatore
 class RecPlayer: public PersonaggioBase {
 	private:
 		unsigned short numero_segreto;
@@ -803,6 +1035,48 @@ class NPC: public PersonaggioBase{
 
 		Quest* getListaQuest(){
 			return listaQuest;
+		}
+};
+
+class Zona {
+	protected:
+		string nome; //nome univoco, usato come 'id'
+		string descrizione;
+		NPC** npc;
+		unsigned short difficolta; // indice di difficolta
+		
+		Zona** childs; // lista delle destinazioni possibili da quella zona
+		Zona* parent; // unico padre
+		
+	public:
+		void setNome(string nomeZ){
+			nome = nomeZ;
+		}
+		string getNome(){
+			return nome;
+		}
+
+		void setDescrizione(string descrizioneZ){
+			descrizione = descrizioneZ;
+		}
+		string getNome(){
+			return descrizione;
+		}
+
+		/// TODO: create get e set della lista NPC
+
+		void setDifficolta(unsigned short difficoltaZ){
+			difficolta = difficoltaZ;
+		}
+		unsigned short getDifficolta(){
+			return difficolta;
+		}
+
+		/// TODO: create get e set della lista childs
+		/// TODO: create get e set del parent
+
+		Zona(){
+
 		}
 };
 
