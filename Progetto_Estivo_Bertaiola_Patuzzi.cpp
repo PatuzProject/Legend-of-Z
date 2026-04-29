@@ -23,8 +23,10 @@ using json = nlohmann::json;
 #define LVLMAX_SPIRITUALITA 14
 #define LVLMAX_PLAYER LVLMAX_SALUTE + LVLMAX_FORZA + LVLMAX_AGILITA + LVLMAX_FORTUNA + LVLMAX_SPIRITUALITA
 
-string FILE_SALVATAGGIO_DEAFULT = "salvataggio.json";
+const string FILE_SALVATAGGIO_DEAFULT = "salvataggio.json";
+const string FILE_CONFIG_DEAFULT = "config.json";
 json DATA_CARICAMENTO;
+json DATA_CONFIGURAZIONI;
 
 //https://en.wikipedia.org/wiki/ANSI_escape_code
 void errore(string s){
@@ -220,7 +222,16 @@ class Consumabile: public Oggetto {
 		}
 };
 
+enum tipo_pozione {
+	CURA,
+	DIFESA,
+	FORTUNA
+};
 class Pozione: public Consumabile{
+	protected:
+		unsigned short efficacia; //efficacia in %, utilizza spiritualita come moltiplicatore
+		tipo_pozione tipoPoz;
+		
 	public:
 		void setEfficacia(unsigned short efficaciaA){
 			efficacia = efficaciaA;
@@ -229,11 +240,6 @@ class Pozione: public Consumabile{
 			return efficacia;
 		}
 
-		enum tipo_pozione {
-			CURA,
-			DIFESA,
-			FORTUNA
-		};
 		void setTipoPozione(tipo_pozione tipoPozP){
 			tipoPoz = tipoPozP;
 		}
@@ -270,10 +276,6 @@ class Pozione: public Consumabile{
 			efficacia = efficaciaC;
 			enum tipo_pozione tipoPoz = tipoPozC;
 		}
-
-	protected:
-		unsigned short efficacia; //efficacia in %
-		tipo_pozione tipoPoz;
 };
 
 class PersonaggioBase {
@@ -595,7 +597,7 @@ class Zona {
 		void setDescrizione(string descrizioneZ){
 			descrizione = descrizioneZ;
 		}
-		string getNome(){
+		string getDescrizione(){
 			return descrizione;
 		}
 
@@ -821,7 +823,7 @@ class RecPlayer: public PersonaggioBase {
 			oro = 0;
 			diamante = 0;
 			monete = 0;
-			livello = maxsalute + forza + agilita + fortuna + spiritualita;
+			aggiornaLivello();
 			xp = 0;
 			nome_spada = "spada arruginita";
 			danno_spada = 0;
@@ -837,6 +839,36 @@ class RecPlayer: public PersonaggioBase {
 			setNumeriSegreti();
 			gioco_finito = false;
 		}
+
+		RecPlayer(string nomeR){
+			nome = nomeR;
+			maxsalute = 10;
+			salute = 10;
+			forza = 1;
+			agilita = 5;
+			fortuna = 5;
+			spiritualita = 0;
+			ferro = 0;
+			oro = 0;
+			diamante = 0;
+			monete = 0;
+			aggiornaLivello();
+			xp = 0;
+			nome_spada = "spada arruginita";
+			danno_spada = 0;
+			//armaEquipaggiata = *(new Arma());
+			nome_armatura = "armatura in pelle";
+			difesa_armatura = 0;
+			//armaturaEquipaggiata = *(new Armatura());
+			//pozione_curativa = 0;
+			zona = "dungeon_boss";
+			minatore_frase = 1;
+			vescovo_frase = 1;
+			fabbro_frase = 1;
+			setNumeriSegreti();
+			gioco_finito = false;
+		}
+
 		RecPlayer(string nomeR,
 				unsigned int saluteR,
 				unsigned int agilitaR,
@@ -871,7 +903,7 @@ class RecPlayer: public PersonaggioBase {
 			forza = forzaR;
 			spiritualita = spriritualitaR;
 			maxsalute = maxsaluteR;
-			livello = maxsalute + forza + agilita + fortuna + spiritualita;
+			aggiornaLivello();
 			xp = xpR;
 
 			nome_spada = nome_spadaR;
@@ -944,13 +976,10 @@ class RecPlayer: public PersonaggioBase {
 			return spiritualita;
 		}
 
-		void setLivello(unsigned int i){
-			if(i > 0 && i <= LVLMAX_PLAYER ){
-				livello = i;
-			} else {
-				//DEFAULT
-				livello = maxsalute + forza +
-					agilita + fortuna + spiritualita;
+		void aggiornaLivello(){
+			unsigned int temp = maxsalute + forza + agilita + fortuna + spiritualita;
+			if(temp <= LVLMAX_PLAYER ){
+				livello = temp;
 			}
 		}
 		int getLivello(){
@@ -1383,12 +1412,12 @@ void salvataggio(recPlayer player){//passiamo la struct player per mettre tutti 
 // Carica i dati in DATA_CARICAMENTO usando il path della variabile FILE_SALVATAGGIO_DEAFULT
 // ritornando true o false se e' riuscito a caricarli o meno
 bool caricamentoJSON(){
-	info("Stiamo caricando la partita...");
+	info("Carico la partita...");
 	system("pause");
 	///TODO: valutare se richiedere il nome del file da caricare
 	ifstream File(FILE_SALVATAGGIO_DEAFULT);
 	if (!File.is_open()) {
-        errore("Non e' stato possibile aprire - '" + FILE_SALVATAGGIO_DEAFULT + "'");
+        errore("Non e' stato possibile trovare il file '" + FILE_SALVATAGGIO_DEAFULT + "'");
 		return false;
     } else {
 		DATA_CARICAMENTO = json::parse(File);
@@ -2388,30 +2417,87 @@ void combattimento(nemico &enemy, recPlayer &player, int difficolta_dungeon){
 }
 
 //OLD MAIN
-int main(){
-	nemico enemy;
-	recPlayer player;
-	srand(time(NULL));
-	player.numero_segreto=(rand()%899)+100;
-	player.numero_vescovo=player.numero_segreto %10;// numero prima posizione
-	player.numero_minatore=((player.numero_segreto - player.numero_vescovo)%100);//numero seconda posizione
-	player.numero_fabbro=(player.numero_segreto - (player.numero_minatore+player.numero_vescovo ));//numero terzo posizione
-	cout<<"start game"<<endl;
-	
-	menu_scelte(enemy, player);
-	
-	return 0;
+//int main(){
+//	nemico enemy;
+//	recPlayer player;
+//	srand(time(NULL));
+//	player.numero_segreto=(rand()%899)+100;
+//	player.numero_vescovo=player.numero_segreto %10;// numero prima posizione
+//	player.numero_minatore=((player.numero_segreto - player.numero_vescovo)%100);//numero seconda posizione
+//	player.numero_fabbro=(player.numero_segreto - (player.numero_minatore+player.numero_vescovo ));//numero terzo posizione
+//	cout<<"start game"<<endl;
+//	
+//	menu_scelte(enemy, player);
+//	
+//	return 0;
+//}
+
+void istanziamentoPartita(RecPlayer* personaggio){
+	// TODO: creazione e navigazione delle zone
+
 }
 
 //NEW MAIN
 int main(){
-	cout << "Caricamento..." << endl;
-	auto player = new RecPlayer();
-	auto nemico = new Nemico(1);
-	
 	srand(time(NULL)); // non so se sia la giusta posizione
+	// TODO: carica config
+	//79 chars
+    cout << "  _____                                        __              ___   ________   " << endl;
+	cout << " |_   _|                                      |  ]           .' ..] |  __   _|  " << endl;
+	cout << "   | |      .---.  .--./) .---.  _ .--.   .--.| |    .--.   _| |_   |_/  / /    " << endl;
+	cout << "   | |   _ / /__\\\\/ /'`\\\\/ /__\\\\[ `.-. |/ /'`\\' |  / .'`\\ \\'-| |-'     .'.' _   " << endl;
+	cout << "  _| |__/ || \\__.,\\ \\._//| \\__., | | | || \\__/  |  | \\__. |  | |     _/ /__/ |  " << endl;
+	cout << " |________| '.__.'.',__`  '.__.'[___||__]'.__.;__]  '.__.'  [___]   |________|  " << endl;
+	cout << "                 ( ( __))                                                       " << endl;
+	cout << endl << endl;
+	cout << "┌────────────────────────────────────────────────────────────────────────────────┐"<<endl;
+	cout << "│                                                                                │"<<endl;
+	cout << "│  1 - Nuova partita                                                             │"<<endl;
+	cout << "│  2 - Carica partita                                                            │"<<endl;
+	//cout << "│  3 - Impostazioni                                                              │"<<endl;
+	cout << "│  4 - Esci                                                                      │"<<endl;
+	cout << "│                                                                                │"<<endl;
+	cout << "└────────────────────────────────────────────────────────────────────────────────┘"<<endl;
 
-	
+	unsigned short scelta = 0;
+	string nomeProtagonista = "";
+	RecPlayer* protagonista;
 
-	return 0;
+	while (scelta < 1 || scelta > 4){
+		cout << "Seleziona: ";
+		
+		///TODO: sanificare scelta
+		cin >> scelta;
+		
+		switch(scelta){
+			case 1:
+				// Nuova partita
+				system("CLS");
+				cout << "Inserisci nome protagonista: ";
+				cin >> nomeProtagonista;
+				protagonista = new RecPlayer(nomeProtagonista);
+				istanziamentoPartita(protagonista);
+				break;
+			case 2:
+				// Carica partita
+				system("CLS");
+				if (caricamentoJSON()){
+					/// TODO: creare protagonista basato sui dati di DATA_CARICAMENTO
+					//protagonista = new RecPlayer();
+				} else {
+					return 0;
+				}
+				break;
+			case 3:
+				//impostazioni
+				info("Non esiste come opzione!");
+				info("Perche non ascolti? Ora son offeso.");
+				return 0;
+				break;
+			case 4:
+				return 0;
+			default:
+				return 0;
+		}
+	}
 }

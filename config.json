@@ -1,0 +1,73 @@
+{
+  "zone": {
+    "_comment": "l'indice 'difficolta' nelle zone indica se c'e la possibilita di trovare un nemico e la sua difficolta",
+    "menu":{
+      "descrizione": "Seleziona le scelte:",
+      "npc":[],
+      "difficolta":0,
+      "childs":["miniera", "mercato", "casa", "villaggio", "arena"],
+      "parent":[]
+    },
+    "miniera": {
+      "descrizione":"lorem ipsum",
+      "npc":["Minatore baffuto"],
+      "difficolta":0,
+      "childs":["caverna"],
+      "parent":["menu"]
+    },
+    "caverna": {
+      "descrizione":"lorem ipsum",
+      "npc":[],
+      "difficolta":1,
+      "childs":[],
+      "parent":["miniera"]
+    },
+    "mercato": {
+      "difficolta":0
+    },
+    "casa": {
+      "difficolta":0
+    },
+    "villaggio": {
+      "difficolta":0
+    },
+    "arena": {
+      "_comment": "l'indice 'difficolta' in questa zona e' da trattare in diverso modo...",
+      "difficolta":0
+    }
+  },
+  "nemici":{
+    "_comment": "nei nemici i valori di proprieta son di 'range', solo per darsi un idea",
+    "lista": [
+      {
+        "nome": "Drago rosso occhi viola super",
+        "salute": 2,
+        "agilita": 2,
+        "fortuna": 2,
+        "danno": 3,
+        "risorse": 3
+      },
+      {
+        "nome": "Goblin scaccoloso mutante",
+        "salute": 3,
+        "agilita": 1,
+        "fortuna": 1,
+        "danno": 4,
+        "risorse": 2
+      }
+    ]
+  },
+  "npc": {
+    "Minatore baffuto": {
+      "quest":[
+        {
+            "id": 1,
+            "descrizione":"portami 5 banane",
+            "oro": 5,
+            "discorso":["Ciao viandante...", "mi servirebbe proprio un favore..."]
+        },
+        {}
+      ]
+    }
+  }
+}
