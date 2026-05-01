@@ -6,34 +6,31 @@
         "idF": 0,
         "nome":"Giorgino",
         "salute": 10,
-        "maxsalute": 1,
         "agilita": 1,
         "fortuna": 1,
         "ferro": 1,
         "oro": 1,
         "diamanti": 1,
         "monete": 1,
+        "maxsalute": 1,
         "forza": 1,
         "spiritualita": 1,
-        "livello": 1,
         "xp": 1,
         "spada": {
-        "nome": "la spada galattica di sauron",
-        "danno": 0.5
+            "nome": "la spada galattica di sauron",
+            "danno": 1
         },
         "armatura": {
-        "nome": "armatura mistica di geronimo stilton",
-        "difesa": 0.5
+            "nome": "armatura mistica di geronimo stilton",
+            "difesa": 1
         },
         "pozioni": {
-            "cura": 4,
-            "difesa": 1,
-            "fortuna": 3
+            "cura": 4
         },
         "zona": "menu",
         "minatore_frase": 0,
         "vescovo_frase": 0,
         "fabbo_frase": 0,
-        "fine": 0
+        "fine": false
     }
 }

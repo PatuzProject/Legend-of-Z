@@ -41,6 +41,172 @@ void titolo(string s){
 void racconto(string s){
 	cout << "\033[0m" << s << endl;
 }
+void pausa(){
+	cout << "Premi un tasto per continuare..." << endl;
+	cin.get();
+}
+void pulisci(){
+	#if defined _WIN32
+		system("cls");
+		//clrscr(); // including header file : conio.h
+	#elif defined (__LINUX__) || defined(__gnu_linux__) || defined(__linux__)
+		system("clear");
+		//std::cout<< u8"\033[2J\033[1;1H"; //Using ANSI Escape Sequences 
+	#elif defined (__APPLE__)
+		system("clear");
+	#endif
+}
+
+
+class Zona {
+	protected:
+		string nome; //nome univoco, usato come 'id'
+		string descrizione;
+		vector<string> npc;
+		unsigned short difficolta; // indice di difficolta
+
+		vector<string> children; // lista delle destinazioni possibili da quella zona
+		vector<string> parent; // lista dei possibili padri
+		
+	public:
+		Zona(){}
+		Zona(
+				string nomeZ,
+				string descrizioneZ,
+				//vector<string> npcZ,
+				unsigned short difficoltaZ
+				//vector<string> childrenZ,
+				//vector<string> parentZ
+			){
+			setNome(nomeZ);
+			setDescrizione(descrizioneZ);
+			setDifficolta(difficoltaZ);
+
+			//for(string a: npcZ){
+			//	addNPC(a);
+			//}
+			//for(string a: childrenZ){
+			//	addChildren(a);
+			//}
+			//for(string a: parentZ){
+			//	addParent(a);
+			//}
+		}
+
+		void setNome(string nomeZ){
+			nome = nomeZ;
+		}
+		string getNome(){
+			return nome;
+		}
+
+		void setDescrizione(string descrizioneZ){
+			descrizione = descrizioneZ;
+		}
+		string getDescrizione(){
+			return descrizione;
+		}
+
+		void addNPC(const string npcZ){
+			npc.push_back(npcZ);
+		}
+		vector<string> getAllNPC() {
+			return npc;
+		}
+
+		void setDifficolta(unsigned short difficoltaZ){
+			difficolta = difficoltaZ;
+		}
+		unsigned short getDifficolta(){
+			return difficolta;
+		}
+
+		void addChildren(const string childrenZ){
+			children.push_back(childrenZ);
+		}
+		vector<string> getAllChildren() {
+			return children;
+		}
+
+		void addParent(const string parentZ){
+			parent.push_back(parentZ);
+		}
+		vector<string> getAllParent() {
+			return parent;
+		}
+
+		string toString(){
+			return getNome() + " " + getDescrizione();
+		}
+};
+
+class Quest {
+	protected:
+		unsigned short id;
+		string descrizione;
+		unsigned short ferro;
+		unsigned short oro;
+		unsigned short diamante;
+		unsigned short monete;
+		vector<string> discorso;
+
+	public:
+		Quest(unsigned short idQ,
+			string descrizioneQ,
+			unsigned short ferroQ,
+			unsigned short oroQ,
+			unsigned short diamanteQ,
+			unsigned short moneteQ){
+				id = idQ;
+				descrizione = descrizioneQ;
+				ferro = ferroQ;
+				oro = oroQ;
+				diamante = diamanteQ;
+				monete = moneteQ;
+		}
+
+		void setId(unsigned short idQ){
+			id = idQ;
+		}
+		unsigned short getId(){
+			return id;
+		}
+
+		void setFerro(unsigned short ferroQ){
+			ferro = ferroQ;
+		}
+		unsigned short getFerro(){
+			return ferro;
+		}
+
+		void setOro(unsigned short oroQ){
+			oro = oroQ;
+		}
+		unsigned short getOro(){
+			return oro;
+		}
+
+		void setDiamante(unsigned short diamanteQ){
+			diamante = diamanteQ;
+		}
+		unsigned short getDiamante(){
+			return diamante;
+		}
+
+		void setMoneta(unsigned short moneteQ){
+			monete = moneteQ;
+		}
+		unsigned short getMoneta(){
+			return monete;
+		}
+
+		void addDiscorso(string discorsoQ){
+			discorso.push_back(discorsoQ);
+		}
+		vector<string> getAllDiscorso(){
+			return discorso;
+		}
+};
 
 class Oggetto {
 	protected:
@@ -89,14 +255,7 @@ class Oggetto {
 			/// TODO: completare il toString()
 		}
 
-		Oggetto(){
-			nome = "";
-			prezzo_ferro = 0;
-			prezzo_oro = 0;
-			prezzo_diamante = 0;
-			prezzo_monete = 0;
-		}
-
+		Oggetto(){}
 		Oggetto(string nomeO, unsigned short prezzo_ferroO,unsigned short prezzo_oroO,
 				unsigned short prezzo_diamanteO, unsigned short prezzo_moneteO){
 			nome = nomeO;
@@ -124,16 +283,7 @@ class Armatura: public Oggetto {
 			/// TODO: completare il toString()
 		}
 
-		Armatura(){
-			nome = "";
-			prezzo_ferro = 0;
-			prezzo_oro = 0;
-			prezzo_diamante = 0;
-			prezzo_monete = 0;
-
-			difesa = 0;
-		}
-
+		Armatura(){}
 		Armatura(string nomeA, unsigned short prezzo_ferroA,unsigned short prezzo_oroA,
 				unsigned short prezzo_diamanteA, unsigned short prezzo_moneteA, unsigned short difesaA){
 			nome = nomeA;
@@ -162,16 +312,7 @@ class Arma: public Oggetto {
 			/// TODO: completare il toString()
 		}
 
-		Arma(){
-			nome = "Spada moscia";
-			prezzo_ferro = 0;
-			prezzo_oro = 0;
-			prezzo_diamante = 0;
-			prezzo_monete = 0;
-
-			attacco = 0;
-		}
-
+		Arma(){}
 		Arma(string nomeA, unsigned short prezzo_ferroA,unsigned short prezzo_oroA,
 				unsigned short prezzo_diamanteA, unsigned short prezzo_moneteA, unsigned short attaccoA){
 			nome = nomeA;
@@ -200,16 +341,7 @@ class Consumabile: public Oggetto {
 			/// TODO: completare il toString()
 		}
 
-		Consumabile(){
-			nome = "";
-			prezzo_ferro = 0;
-			prezzo_oro = 0;
-			prezzo_diamante = 0;
-			prezzo_monete = 0;
-
-			quantita = 0;
-		}
-
+		Consumabile(){}
 		Consumabile(string nomeC, unsigned short prezzo_ferroC,unsigned short prezzo_oroC,
 				unsigned short prezzo_diamanteC, unsigned short prezzo_moneteC, unsigned short quantitaC){
 			nome = nomeC;
@@ -315,13 +447,13 @@ class PersonaggioBase {
 			monete = moneteP;
 		}
 
-		//void setNome(string s){
-		//	if (s != ""){
-		//		nome = s;
-		//	} else {
-		//		// errore("Errore, nome personaggio vuoto");
-		//	}
-		//}
+		void setNome(string s){
+			if (s != ""){
+				nome = s;
+			} else {
+				errore("Errore, nome personaggio vuoto");
+			}
+		}
 		string getNome(){
 			return nome;
 		}
@@ -464,76 +596,6 @@ struct recPlayer{
 	bool gioco_finito = false;
 };
 
-class Quest {
-	protected:
-		unsigned short id;
-		string descrizione;
-		unsigned short ferro;
-		unsigned short oro;
-		unsigned short diamante;
-		unsigned short moneta;
-		string* discorso;
-
-	public:
-		Quest(unsigned short idQ,
-			string descrizioneQ,
-			unsigned short ferroQ,
-			unsigned short oroQ,
-			unsigned short diamanteQ,
-			unsigned short monetaQ,
-			string* discorsoQ){
-				id = idQ;
-				descrizione = descrizioneQ;
-				ferro = ferroQ;
-				oro = oroQ;
-				diamante = diamanteQ;
-				moneta = monetaQ;
-				discorso = discorsoQ;
-		}
-
-		void setId(unsigned short idQ){
-			id = idQ;
-		}
-		unsigned short getId(){
-			return id;
-		}
-
-		void setFerro(unsigned short ferroQ){
-			ferro = ferroQ;
-		}
-		unsigned short getFerro(){
-			return ferro;
-		}
-
-		void setOro(unsigned short oroQ){
-			oro = oroQ;
-		}
-		unsigned short getOro(){
-			return oro;
-		}
-
-		void setDiamante(unsigned short diamanteQ){
-			diamante = diamanteQ;
-		}
-		unsigned short getDiamante(){
-			return diamante;
-		}
-
-		void setMoneta(unsigned short monetaQ){
-			moneta = monetaQ;
-		}
-		unsigned short getMoneta(){
-			return moneta;
-		}
-
-		//void setDiscorso(string* discorsoQ){
-		//	discorso = discorsoQ;
-		//}
-		string* getDiscorso(){
-			return discorso;
-		}
-};
-
 class NPC: public PersonaggioBase{
 	protected:
 		string id;
@@ -564,105 +626,25 @@ class NPC: public PersonaggioBase{
 		void addQuest(const Quest& questZ) {
 			listaQuest.push_back(questZ);
 		}
-		Quest& getParent(size_t index) {
+		Quest& getQuest(size_t index) {
 			if (index >= listaQuest.size()) {
 				throw out_of_range("listaQuest::get: index out of range");
 			}
 			return listaQuest[index];
     	}
-		vector<Quest>& getAllParent() {
+		vector<Quest>& getAllQuest() {
 			return listaQuest;
 		}
 
-};
-
-class Zona {
-	protected:
-		string nome; //nome univoco, usato come 'id'
-		string descrizione;
-		vector<NPC> npc;
-		unsigned short difficolta; // indice di difficolta
-		
-		vector<Zona> children; // lista delle destinazioni possibili da quella zona
-		vector<Zona> parent; // lista dei possibili padri
-		
-	public:
-		void setNome(string nomeZ){
-			nome = nomeZ;
-		}
-		string getNome(){
-			return nome;
-		}
-
-		void setDescrizione(string descrizioneZ){
-			descrizione = descrizioneZ;
-		}
-		string getDescrizione(){
-			return descrizione;
-		}
-
-		void addNPC(const NPC& npcZ) {
-			npc.push_back(npcZ);
-		}
-		NPC& getNPC(size_t index) {
-			if (index >= npc.size()) {
-				throw out_of_range("npc::get: index out of range");
-			}
-			return npc[index];
-    	}
-		vector<NPC>& getAllNPC() {
-			return npc;
-		}
-
-		void setDifficolta(unsigned short difficoltaZ){
-			difficolta = difficoltaZ;
-		}
-		unsigned short getDifficolta(){
-			return difficolta;
-		}
-
-		void addChildren(const Zona& childrenZ) {
-			children.push_back(childrenZ);
-		}
-		Zona& getChildred(size_t index) {
-			if (index >= children.size()) {
-				throw out_of_range("children::get: index out of range");
-			}
-			return children[index];
-    	}
-		vector<Zona>& getAllChildren() {
-			return children;
-		}
-		
-		void addParent(const Zona& parentZ) {
-			parent.push_back(parentZ);
-		}
-		Zona& getParent(size_t index) {
-			if (index >= parent.size()) {
-				throw out_of_range("parent::get: index out of range");
-			}
-			return parent[index];
-    	}
-		vector<Zona>& getAllParent() {
-			return parent;
-		}
-
-		Zona(){}
-		Zona(string nomeZ, string descrizioneZ, vector<NPC> npcZ, unsigned short difficoltaZ,
-				vector<Zona> childrenZ, vector<Zona> parentZ){
-			nome = nomeZ;
-			descrizione = descrizioneZ;
-			npc = npcZ;
-			difficolta = difficoltaZ;
-			children = childrenZ;
-			parent = parentZ;
+		string toString(){
+			return getId() + " " + getNome();
 		}
 };
 
 class Nemico: public PersonaggioBase{
 	protected:
-		unsigned int danno; //danno base
-		unsigned int cure; //num pozioni nel inventario
+		unsigned int danno; // danno base
+		unsigned int cure; // num pozioni nel inventario
 	
 	public:
 		Nemico(){
@@ -682,7 +664,8 @@ class Nemico: public PersonaggioBase{
 			/// TODO: Implentare nemico secondo la zona, usare json
 		}
 
-		Nemico(string nomeN,
+		Nemico(
+				string nomeN,
 				unsigned int saluteN,
 				unsigned int agilitaN, 
 				unsigned int fortunaN,
@@ -750,8 +733,7 @@ class RecPlayer: public PersonaggioBase {
 		unsigned short numero_vescovo;
 		unsigned short numero_fabbro;
 
-		void setNumeriSegreti(){
-			srand(time(NULL));
+		void creaNumeriSegreti(){
 			numero_segreto = (rand()%899)+100;
 			/// TODO: valutare di salvare solo il numero segreto e 'giocarci'
 			///			(magari unire con il nome in binario) per avere anche gli altri numeri
@@ -759,6 +741,7 @@ class RecPlayer: public PersonaggioBase {
 			numero_minatore = ((numero_segreto - numero_vescovo)%100);//numero seconda posizione
 			numero_fabbro = (numero_segreto - (numero_minatore + numero_vescovo ));//numero terzo posizione
 		}
+
 
 		void setNumeroSegreto(unsigned int num){
 			if (num > 0){
@@ -812,64 +795,69 @@ class RecPlayer: public PersonaggioBase {
 
 	public:
 		RecPlayer(){
-			nome = "IlSalvatore";
-			maxsalute = 10;
-			salute = 10;
-			forza = 1;
-			agilita = 5;
-			fortuna = 5;
-			spiritualita = 0;
-			ferro = 0;
-			oro = 0;
-			diamante = 0;
-			monete = 0;
+			setNome("IlSalvatore");
+			setMaxSalute(10);
+			setSalute(10);
+			setForza(1);
+			setAgilita(5);
+			setFortuna(5);
+			setSpiritualita(0);
+			setFerro(0);
+			setOro(0);
+			setDiamante(0);
+			setMonete(0);
 			aggiornaLivello();
-			xp = 0;
-			nome_spada = "spada arruginita";
-			danno_spada = 0;
+			setXP(0);
+			setNomeSpada("spada arruginita");
+			setDannoSpada(0);
 			//armaEquipaggiata = *(new Arma());
-			nome_armatura = "armatura in pelle";
-			difesa_armatura = 0;
+			setNomeArmatura("armatura in pelle");
+			setDifesaArmatura(0);
 			//armaturaEquipaggiata = *(new Armatura());
-			//pozione_curativa = 0;
-			zona = "dungeon_boss";
-			minatore_frase = 1;
-			vescovo_frase = 1;
-			fabbro_frase = 1;
-			setNumeriSegreti();
-			gioco_finito = false;
+			setPozioneCurativa(0);
+			setZona("dungeon_boss");
+			setMinatoreFrase(0);
+			setVescovoFrase(0);
+			setFabbroFrase(0);
+			creaNumeriSegreti();
+			setGiocoFinito(false);
 		}
 
 		RecPlayer(string nomeR){
-			nome = nomeR;
-			maxsalute = 10;
-			salute = 10;
-			forza = 1;
-			agilita = 5;
-			fortuna = 5;
-			spiritualita = 0;
-			ferro = 0;
-			oro = 0;
-			diamante = 0;
-			monete = 0;
+			setNome(nomeR);
+			setMaxSalute(10);
+			setSalute(10);
+			setForza(1);
+			setAgilita(5);
+			setFortuna(5);
+			setSpiritualita(0);
+			setFerro(0);
+			setOro(0);
+			setDiamante(0);
+			setMonete(0);
 			aggiornaLivello();
-			xp = 0;
-			nome_spada = "spada arruginita";
-			danno_spada = 0;
+			setXP(0);
+			setNomeSpada("spada arruginita");
+			setDannoSpada(0);
 			//armaEquipaggiata = *(new Arma());
-			nome_armatura = "armatura in pelle";
-			difesa_armatura = 0;
+			setNomeArmatura("armatura in pelle");
+			setDifesaArmatura(0);
 			//armaturaEquipaggiata = *(new Armatura());
-			//pozione_curativa = 0;
-			zona = "dungeon_boss";
-			minatore_frase = 1;
-			vescovo_frase = 1;
-			fabbro_frase = 1;
-			setNumeriSegreti();
-			gioco_finito = false;
+			setPozioneCurativa(0);
+			setZona("dungeon_boss");
+			setMinatoreFrase(0);
+			setVescovoFrase(0);
+			setFabbroFrase(0);
+			creaNumeriSegreti();
+			setGiocoFinito(false);
 		}
 
-		RecPlayer(string nomeR,
+		RecPlayer(
+				unsigned short numero_segretoR,
+				unsigned short numero_minatoreR,
+				unsigned short numero_vescovoR,
+				unsigned short numero_fabbroR,
+				string nomeR,
 				unsigned int saluteR,
 				unsigned int agilitaR,
 				unsigned int fortunaR,
@@ -891,7 +879,12 @@ class RecPlayer: public PersonaggioBase {
 				////
 				unsigned short minatore_fraseR,
 				unsigned short vescovo_fraseR, 
-				unsigned short fabbro_fraseR){
+				unsigned short fabbro_fraseR,
+				bool fineR){
+			setNumeroSegreto(numero_segretoR);
+			setNumeroMinatore(numero_minatoreR);
+			setNumeroVescovo(numero_vescovoR);
+			setNumeroFabbro(numero_fabbroR);
 			nome = nomeR;
 			salute = saluteR;
 			agilita = agilitaR;
@@ -917,12 +910,11 @@ class RecPlayer: public PersonaggioBase {
 			pozione_curativa = pozione_curativaR;
 			zona = zonaR;
 
-
 			minatore_frase = minatore_fraseR;
 			vescovo_frase = vescovo_fraseR;
 			fabbro_frase = fabbro_fraseR;
-			setNumeriSegreti();
-			gioco_finito = false;
+			
+			gioco_finito = fineR;
 		}
 
 		// OVERRIDE
@@ -1064,7 +1056,7 @@ class RecPlayer: public PersonaggioBase {
 		}
 
 		void setMinatoreFrase(unsigned short i){
-			if(i > 0){
+			if(i >= 0){
 				minatore_frase = i;
 			} else {
 				i = 1;
@@ -1075,7 +1067,7 @@ class RecPlayer: public PersonaggioBase {
 		}
 
 		void setVescovoFrase(unsigned short i){
-			if(i > 0){
+			if(i >= 0){
 				vescovo_frase = i;
 			} else {
 				i = 1;
@@ -1086,7 +1078,7 @@ class RecPlayer: public PersonaggioBase {
 		}
 
 		void setFabbroFrase(unsigned short i){
-			if(i > 0){
+			if(i >= 0){
 				fabbro_frase = i;
 			} else {
 				i = 1;
@@ -1112,8 +1104,8 @@ class RecPlayer: public PersonaggioBase {
 		bool isGiocoFinito(){
 			return gioco_finito;
 		}
-		void setGiocoFinito(){
-			gioco_finito = true;
+		void setGiocoFinito(bool b){
+			gioco_finito = b;
 		}
 
 		//stampa statistiche personaggio
@@ -1133,7 +1125,7 @@ class RecPlayer: public PersonaggioBase {
 			racconto(nome_spada + " che aumenta i danni di " + to_string(danno_spada));
 			racconto(nome_armatura + " che riduce i danni di " + to_string(difesa_armatura));
 			racconto("Pozione Curativa: " + to_string(pozione_curativa));
-			racconto("\t*Item*");
+			racconto("\t*Portafoglio*");
 			racconto("Ferro :" + to_string(ferro));
 			racconto("Oro :" + to_string(oro));
 			racconto("Diamante :" + to_string(diamante));
@@ -1177,8 +1169,12 @@ class RecPlayer: public PersonaggioBase {
 		}
 };
 
+vector<Zona> LISTA_ZONE;
+vector<Nemico> LISTA_NEMICI;
+vector<NPC> LISTA_NPC;
+
 /*menu*/
-int menu_scelte(nemico &enemy, recPlayer &player);
+void menu_scelte(nemico &enemy, recPlayer &player);
 int open_menu(nemico &enemy, recPlayer &player);
 void salva_account(char nome, int eta);
 void info_personaggio_output(recPlayer player);
@@ -1272,7 +1268,7 @@ class Combattimento {
 
 
 
-int menu_scelte(nemico &enemy, recPlayer &player){
+void menu_scelte(nemico &enemy, recPlayer &player){
 	int scelta=0;//variabile che determina le scelte al interno del menu
 	int zona=0;//variabile che determina la zona in cui andare
 	bool chiudi=false;//bool che serve per la chiusura del gioco
@@ -1300,7 +1296,6 @@ int menu_scelte(nemico &enemy, recPlayer &player){
 			case 4:
 				chiudi=true;//premendo 4 il bool diventa true e il gioco si chiude 
 				cout<<endl<<"arrivederci"<<endl;
-				break;
 		} 
 	}while(!chiudi);
 }
@@ -1409,12 +1404,25 @@ void salvataggio(recPlayer player){//passiamo la struct player per mettre tutti 
     //gioco finito?
     FileSalvataggio<<player.gioco_finito<<endl;
 }
+
+// Carica i dati in DATA_CONFIGURAZIONI usando il path della variabile FILE_CONFIG_DEAFULT
+// ritornando true o false se e' riuscito a caricarli o meno
+bool caricaConfig(){
+	ifstream File(FILE_CONFIG_DEAFULT);
+	if (!File.is_open()) {
+        errore("Non e' stato possibile trovare il file '" + FILE_CONFIG_DEAFULT + "'");
+		return false;
+    } else {
+		DATA_CONFIGURAZIONI = json::parse(File);
+		return true;
+	}
+}
+
 // Carica i dati in DATA_CARICAMENTO usando il path della variabile FILE_SALVATAGGIO_DEAFULT
 // ritornando true o false se e' riuscito a caricarli o meno
 bool caricamentoJSON(){
-	info("Carico la partita...");
-	system("pause");
-	///TODO: valutare se richiedere il nome del file da caricare
+	racconto("Carico la partita...");
+	/// TODO: valutare se richiedere il nome del file da caricare
 	ifstream File(FILE_SALVATAGGIO_DEAFULT);
 	if (!File.is_open()) {
         errore("Non e' stato possibile trovare il file '" + FILE_SALVATAGGIO_DEAFULT + "'");
@@ -1624,7 +1632,6 @@ void villaggio(nemico &enemy, recPlayer &player, bool &esci_dal_gioco){//cose da
 	}while(!(esci_dal_gioco||lascia_zona));// si fa fino a quando non si ha lascia zona o esci dal gioco
 }
 
-//
 void mercato(nemico &enemy, recPlayer &player,bool &esci_dal_gioco){//cose da fare al mercato
     system("CLS");
     int parla;
@@ -1659,7 +1666,6 @@ void mercato(nemico &enemy, recPlayer &player,bool &esci_dal_gioco){//cose da fa
 		}
 	}while(!(esci_dal_gioco||lascia_zona));// si fa fino a quando non si ha lascia zona o esci dal gioco
     } 
-
 
 void casa(nemico &enemy, recPlayer &player, bool &esci_dal_gioco){
     system("CLS");
@@ -2433,15 +2439,98 @@ void combattimento(nemico &enemy, recPlayer &player, int difficolta_dungeon){
 //}
 
 void istanziamentoPartita(RecPlayer* personaggio){
-	// TODO: creazione e navigazione delle zone
+	// ZONE
+	json zoneJson = DATA_CONFIGURAZIONI["zone"];
+	for (json::iterator it = zoneJson.begin(); it != zoneJson.end(); ++it) {
+		json zonaJson = zoneJson[it.key()];
+		if(zonaJson.is_object()){
+			cout << zonaJson["descrizione"] << endl;
+			cout << it.key() << endl;
+			auto zona = Zona(
+				it.key(),
+				zonaJson["descrizione"].get<string>(),
+				//zonaJson["npc"].get<vector<string>>(),
+				zonaJson["difficolta"].get<u_short>()
+				//zonaJson["childs"].get<vector<string>>(),
+				//zonaJson["parent"].get<vector<string>>()
+			);
+			cout << zona.toString() << endl;
+			LISTA_ZONE.push_back(zona);
+		}
+	}
+
+	cout << 2 << endl;
+	// NEMICI
+	json nemiciJson = DATA_CONFIGURAZIONI["nemici"];
+	for (json::iterator it = nemiciJson.begin(); it != nemiciJson.end(); ++it) {
+		json nemicoJson = nemiciJson[it.key()];
+		if(nemicoJson.is_object()){
+			auto nemico = Nemico(
+				nemicoJson["nome"].get<string>(),
+				nemicoJson["salute"].get<u_int>(),
+				nemicoJson["agilita"].get<u_int>(),
+				nemicoJson["fortuna"].get<u_int>(),
+				nemicoJson["ferro"].get<u_int>(),
+				nemicoJson["oro"].get<u_int>(),
+				nemicoJson["diamante"].get<u_int>(),
+				nemicoJson["monete"].get<u_int>(),
+				nemicoJson["danno"].get<u_int>(),
+				nemicoJson["cure"].get<u_int>()
+			);
+			LISTA_NEMICI.push_back(nemico);
+		}
+	}
+
+	cout << 3 << endl;
+
+	// NPC
+	json npcsJson = DATA_CONFIGURAZIONI["npc"];
+	for (json::iterator it = npcsJson.begin(); it != npcsJson.end(); ++it) {
+		json npcJson = npcsJson[it.key()];
+		if(npcJson.is_object()){
+			json questNpc = npcJson["quest"];
+			vector<Quest> listaQuest;
+			for(auto q: questNpc) {
+				auto quest = Quest(
+					q["id"].get<u_short>(),
+					q["id"].get<string>(),
+					q["ferro"].get<u_short>(),
+					q["oro"].get<u_short>(),
+					q["diamante"].get<u_short>(),
+					q["monete"].get<u_short>()
+				);
+				for(auto d: q["discorso"]){
+					quest.addDiscorso(d.get<string>());
+				}
+				listaQuest.push_back(quest);
+			}
+			auto npc = NPC(
+				it.key(),
+				npcJson["nome"].get<string>(),
+				listaQuest
+			);
+			LISTA_NPC.push_back(npc);
+		}
+	}
+	
+	for(auto npc: LISTA_NPC){
+		cout << npc.toString() << endl;
+	}
+
+	titolo("Ho dormito troppo, dove andiamo oggi?");
 
 }
 
 //NEW MAIN
-int main(){
-	srand(time(NULL)); // non so se sia la giusta posizione
-	// TODO: carica config
-	//79 chars
+int main(int argc, char* argv[]){
+	srand(time(NULL));
+
+	if(!caricaConfig() && DATA_CONFIGURAZIONI != NULL){
+		system("pause");
+		return 0;
+	}
+
+	//80 chars
     cout << "  _____                                        __              ___   ________   " << endl;
 	cout << " |_   _|                                      |  ]           .' ..] |  __   _|  " << endl;
 	cout << "   | |      .---.  .--./) .---.  _ .--.   .--.| |    .--.   _| |_   |_/  / /    " << endl;
@@ -2468,35 +2557,74 @@ int main(){
 		
 		///TODO: sanificare scelta
 		cin >> scelta;
-		
+
 		switch(scelta){
 			case 1:
+				pulisci();
 				// Nuova partita
-				system("CLS");
 				cout << "Inserisci nome protagonista: ";
 				cin >> nomeProtagonista;
 				protagonista = new RecPlayer(nomeProtagonista);
 				istanziamentoPartita(protagonista);
 				break;
+
 			case 2:
+				pulisci();
 				// Carica partita
-				system("CLS");
-				if (caricamentoJSON()){
-					/// TODO: creare protagonista basato sui dati di DATA_CARICAMENTO
-					//protagonista = new RecPlayer();
+				if (caricamentoJSON() && DATA_CARICAMENTO != NULL){
+					protagonista = new RecPlayer(
+						DATA_CARICAMENTO["protagonista"]["id"].get<u_short>(),
+						DATA_CARICAMENTO["protagonista"]["idM"].get<u_short>(),
+						DATA_CARICAMENTO["protagonista"]["idV"].get<u_short>(),
+						DATA_CARICAMENTO["protagonista"]["idF"].get<u_short>(),
+						DATA_CARICAMENTO["protagonista"]["nome"].get<string>(),
+						DATA_CARICAMENTO["protagonista"]["salute"].get<u_int>(),
+						DATA_CARICAMENTO["protagonista"]["agilita"].get<u_int>(),
+						DATA_CARICAMENTO["protagonista"]["fortuna"].get<u_int>(),
+						DATA_CARICAMENTO["protagonista"]["ferro"].get<u_int>(),
+						DATA_CARICAMENTO["protagonista"]["oro"].get<u_int>(),
+						DATA_CARICAMENTO["protagonista"]["diamanti"].get<u_int>(),
+						DATA_CARICAMENTO["protagonista"]["monete"].get<u_int>(),
+						DATA_CARICAMENTO["protagonista"]["maxsalute"].get<u_int>(),
+						DATA_CARICAMENTO["protagonista"]["forza"].get<u_int>(),
+						DATA_CARICAMENTO["protagonista"]["spiritualita"].get<u_int>(),
+						DATA_CARICAMENTO["protagonista"]["xp"].get<u_int>(),
+						DATA_CARICAMENTO["protagonista"]["spada"]["nome"].get<string>(),
+						DATA_CARICAMENTO["protagonista"]["spada"]["danno"].get<u_int>(),
+						DATA_CARICAMENTO["protagonista"]["armatura"]["nome"].get<string>(),
+						DATA_CARICAMENTO["protagonista"]["armatura"]["difesa"].get<u_int>(),
+						DATA_CARICAMENTO["protagonista"]["pozioni"]["cura"].get<u_int>(),
+						DATA_CARICAMENTO["protagonista"]["zona"].get<string>(),
+						DATA_CARICAMENTO["protagonista"]["minatore_frase"].get<u_short>(),
+						DATA_CARICAMENTO["protagonista"]["vescovo_frase"].get<u_short>(),
+						DATA_CARICAMENTO["protagonista"]["fabbo_frase"].get<u_short>(),
+						DATA_CARICAMENTO["protagonista"]["fine"].get<bool>()
+					);
+
+					istanziamentoPartita(protagonista);
 				} else {
+					errore("Errore nel file di salvataggio.");
 					return 0;
 				}
 				break;
+
 			case 3:
-				//impostazioni
+				pulisci();
+				// Impostazioni
 				info("Non esiste come opzione!");
 				info("Perche non ascolti? Ora son offeso.");
+				pausa();
 				return 0;
-				break;
+
 			case 4:
+				pulisci();
+				info("Ti aspettiamo per la prossima avvuntura");
+				pausa();
 				return 0;
+
 			default:
+				errore("Sembra che parliamo due lingue diverse, cerca un traduttore e torna da noi.");
+				pausa();
 				return 0;
 		}
 	}

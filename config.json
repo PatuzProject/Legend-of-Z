@@ -1,39 +1,40 @@
 {
   "zone": {
     "_comment": "l'indice 'difficolta' nelle zone indica se c'e la possibilita di trovare un nemico e la sua difficolta",
+    "_comment2": "se 'difficolta' = 0 allora NON ci devono essere nemici",
     "menu":{
       "descrizione": "Seleziona le scelte:",
       "npc":[],
-      "difficolta":0,
+      "difficolta": 0,
       "childs":["miniera", "mercato", "casa", "villaggio", "arena"],
       "parent":[]
     },
     "miniera": {
       "descrizione":"lorem ipsum",
       "npc":["Minatore baffuto"],
-      "difficolta":0,
+      "difficolta": 0,
       "childs":["caverna"],
       "parent":["menu"]
     },
     "caverna": {
       "descrizione":"lorem ipsum",
       "npc":[],
-      "difficolta":1,
+      "difficolta": 1,
       "childs":[],
       "parent":["miniera"]
     },
     "mercato": {
-      "difficolta":0
+      "difficolta": 0
     },
     "casa": {
-      "difficolta":0
+      "difficolta": 0
     },
     "villaggio": {
-      "difficolta":0
+      "difficolta": 0
     },
     "arena": {
       "_comment": "l'indice 'difficolta' in questa zona e' da trattare in diverso modo...",
-      "difficolta":0
+      "difficolta": 0
     }
   },
   "nemici":{
@@ -44,29 +45,51 @@
         "salute": 2,
         "agilita": 2,
         "fortuna": 2,
+        "ferro": 3,
+        "oro": 3,
+        "diamante": 3,
+        "monete": 3,
         "danno": 3,
-        "risorse": 3
+        "cure": 3
       },
       {
         "nome": "Goblin scaccoloso mutante",
         "salute": 3,
         "agilita": 1,
-        "fortuna": 1,
-        "danno": 4,
-        "risorse": 2
+        "fortuna": 2,
+        "ferro": 2,
+        "oro": 1,
+        "diamante": 1,
+        "monete": 4,
+        "danno": 6,
+        "cure": 2
       }
     ]
   },
   "npc": {
-    "Minatore baffuto": {
+    "Minatore": {
+      "_comment": "id delle quest sono salvate nella proprieta XX_frase",
+      "_comment2": "e devono essere eseguite linearmente",
+      "nome": "Minatore baffuto",
       "quest":[
         {
             "id": 1,
             "descrizione":"portami 5 banane",
+            "ferro": 5,
             "oro": 5,
+            "diamante": 5,
+            "monete": 5,
             "discorso":["Ciao viandante...", "mi servirebbe proprio un favore..."]
         },
-        {}
+        {
+            "id": 2,
+            "descrizione":"portami 5 ceppi di legna",
+            "ferro": 5,
+            "oro": 5,
+            "diamante": 5,
+            "monete": 5,
+            "discorso":["Ho freddo, non riesco a trovare della legna da ardare", "cerca di fare prima possibile"]
+        }
       ]
     }
   }
