@@ -73,24 +73,24 @@ class Zona {
 		Zona(
 				string nomeZ,
 				string descrizioneZ,
-				//vector<string> npcZ,
-				unsigned short difficoltaZ
-				//vector<string> childrenZ,
-				//vector<string> parentZ
+				vector<string> npcZ,
+				unsigned short difficoltaZ,
+				vector<string> childrenZ,
+				vector<string> parentZ
 			){
 			setNome(nomeZ);
 			setDescrizione(descrizioneZ);
 			setDifficolta(difficoltaZ);
 
-			//for(string a: npcZ){
-			//	addNPC(a);
-			//}
-			//for(string a: childrenZ){
-			//	addChildren(a);
-			//}
-			//for(string a: parentZ){
-			//	addParent(a);
-			//}
+			for(string a: npcZ){
+				addNPC(a);
+			}
+			for(string a: childrenZ){
+				addChildren(a);
+			}
+			for(string a: parentZ){
+				addParent(a);
+			}
 		}
 
 		void setNome(string nomeZ){
@@ -136,7 +136,7 @@ class Zona {
 		}
 
 		string toString(){
-			return getNome() + " " + getDescrizione();
+			return getNome() + " - " + getDescrizione();
 		}
 };
 
@@ -2438,29 +2438,106 @@ void combattimento(nemico &enemy, recPlayer &player, int difficolta_dungeon){
 //	return 0;
 //}
 
+void viaggiaTraZone(RecPlayer* personaggio, string toZona){
+	Zona zonaSelezionata;
+	
+	for(auto zona: LISTA_ZONE){
+		if(zona.getNome() == toZona){
+			zonaSelezionata = zona;
+			break;
+		}
+	}
+
+	if(&zonaSelezionata == NULL){
+		personaggio->setZona(toZona);
+
+		unsigned short iSelezione = 0;
+		unsigned short i = 0;
+
+		unsigned short numNPC = zonaSelezionata.getAllNPC().size();
+		unsigned short numDifficolta = zonaSelezionata.getDifficolta();
+		unsigned short numChildren = zonaSelezionata.getAllChildren().size();
+		unsigned short numParent = zonaSelezionata.getAllParent().size();
+
+		racconto(toZona);
+
+		if(numNPC > 0){
+			racconto("Posso parlare con:");
+			for (string npc: zonaSelezionata.getAllNPC()){
+				racconto(i + " - " + npc);
+				i++;
+			}
+		}
+		
+		if(numDifficolta > 0){
+			racconto(i + " - Posso sfidare le creature di questa zona");
+			i++;
+		}
+
+		if(numChildren > 0 || numParent > 0){
+			cout << endl << endl;
+			racconto(i + " - Posso viaggiare");
+			i++;
+		}
+
+		cout << "Seleziona: ";
+		cin >> iSelezione;
+		if(iSelezione > 0 && iSelezione <= i){
+			if(iSelezione <= numNPC){
+				// parlare con NPC
+
+			} else if (iSelezione > numNPC && iSelezione <= numNPC+(numDifficolta > 0 ? 1 : 0)){
+				// battaglia
+
+			} else if(iSelezione > numNPC+(numDifficolta > 0 ? 1 : 0)){
+				// viaggiare altrove
+				pulisci();
+				unsigned short u = 0;
+				unsigned short iViaggia = 0;
+				titolo("Da qua posso raggiungere queste destinazioni:");
+				for (string children: zonaSelezionata.getAllChildren()){
+					racconto(u + " - " + children);
+					u++;
+				}
+				for (string parent: zonaSelezionata.getAllParent()){
+					racconto(u + " - " + parent);
+					u++;
+				}
+				cout << "Seleziona: ";
+				cin >> iViaggia;
+				/// TODO: sanitizzare iViaggia
+				if(iViaggia > 0 && iViaggia <= u){
+					if(iViaggia <= numChildren){
+						// viaggia a parent
+					} else {
+						// viaggia a parent
+					}
+				}
+			}
+		} else {
+			errore("Non ho capito cosa voglio fare della mia vita");
+		}
+	}
+}
+
 void istanziamentoPartita(RecPlayer* personaggio){
 	// ZONE
 	json zoneJson = DATA_CONFIGURAZIONI["zone"];
 	for (json::iterator it = zoneJson.begin(); it != zoneJson.end(); ++it) {
 		json zonaJson = zoneJson[it.key()];
 		if(zonaJson.is_object()){
-			cout << to_string(zonaJson["descrizione"]) << endl;
-			cout << "-------" << endl;
-			cout << it.key() << endl;
 			auto zona = Zona(
 				it.key(),
 				zonaJson["descrizione"].get<string>(),
-				//zonaJson["npc"].get<vector<string>>(),
-				zonaJson["difficolta"].get<u_short>()
-				//zonaJson["childs"].get<vector<string>>(),
-				//zonaJson["parent"].get<vector<string>>()
+				zonaJson["npc"].get<vector<string>>(),
+				zonaJson["difficolta"].get<u_short>(),
+				zonaJson["childs"].get<vector<string>>(),
+				zonaJson["parent"].get<vector<string>>()
 			);
-			cout << zona.toString() << endl;
 			LISTA_ZONE.push_back(zona);
 		}
 	}
 
-	/*cout << 2 << endl;
 	// NEMICI
 	json nemiciJson = DATA_CONFIGURAZIONI["nemici"];
 	for (json::iterator it = nemiciJson.begin(); it != nemiciJson.end(); ++it) {
@@ -2482,8 +2559,6 @@ void istanziamentoPartita(RecPlayer* personaggio){
 		}
 	}
 
-	cout << 3 << endl;
-
 	// NPC
 	json npcsJson = DATA_CONFIGURAZIONI["npc"];
 	for (json::iterator it = npcsJson.begin(); it != npcsJson.end(); ++it) {
@@ -2494,7 +2569,7 @@ void istanziamentoPartita(RecPlayer* personaggio){
 			for(auto q: questNpc) {
 				auto quest = Quest(
 					q["id"].get<u_short>(),
-					q["id"].get<string>(),
+					q["descrizione"].get<string>(),
 					q["ferro"].get<u_short>(),
 					q["oro"].get<u_short>(),
 					q["diamante"].get<u_short>(),
@@ -2513,13 +2588,10 @@ void istanziamentoPartita(RecPlayer* personaggio){
 			LISTA_NPC.push_back(npc);
 		}
 	}
-	
-	for(auto npc: LISTA_NPC){
-		cout << npc.toString() << endl;
-	}
 
 	titolo("Ho dormito troppo, dove andiamo oggi?");
-	*/
+
+	viaggiaTraZone(personaggio, "menu");
 }
 
 //NEW MAIN

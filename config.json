@@ -10,31 +10,47 @@
       "parent":[]
     },
     "miniera": {
-      "descrizione":"lorem ipsum",
+      "descrizione":"lorem ipsum miniera",
       "npc":["Minatore baffuto"],
       "difficolta": 0,
       "childs":["caverna"],
       "parent":["menu"]
     },
     "caverna": {
-      "descrizione":"lorem ipsum",
+      "descrizione":"lorem ipsum caverna",
       "npc":[],
       "difficolta": 1,
       "childs":[],
-      "parent":["miniera"]
+      "parent":["menu", "miniera"]
     },
     "mercato": {
-      "difficolta": 0
+      "descrizione": "",
+      "npc":[],
+      "difficolta": 0,
+      "childs":[],
+      "parent":["menu"]
     },
     "casa": {
-      "difficolta": 0
+      "descrizione": "",
+      "npc":[],
+      "difficolta": 0,
+      "childs":[],
+      "parent":["menu"]
     },
     "villaggio": {
-      "difficolta": 0
+      "descrizione": "",
+      "npc":[],
+      "difficolta": 0,
+      "childs":[],
+      "parent":["menu"]
     },
     "arena": {
       "_comment": "l'indice 'difficolta' in questa zona e' da trattare in diverso modo...",
-      "difficolta": 0
+      "descrizione": "",
+      "npc":[],
+      "difficolta": 0,
+      "childs":[],
+      "parent":["menu"]
     }
   },
   "nemici":{
