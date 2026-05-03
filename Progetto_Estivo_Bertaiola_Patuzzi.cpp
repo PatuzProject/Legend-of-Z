@@ -2444,7 +2444,8 @@ void istanziamentoPartita(RecPlayer* personaggio){
 	for (json::iterator it = zoneJson.begin(); it != zoneJson.end(); ++it) {
 		json zonaJson = zoneJson[it.key()];
 		if(zonaJson.is_object()){
-			cout << zonaJson["descrizione"] << endl;
+			cout << to_string(zonaJson["descrizione"]) << endl;
+			cout << "-------" << endl;
 			cout << it.key() << endl;
 			auto zona = Zona(
 				it.key(),
@@ -2459,7 +2460,7 @@ void istanziamentoPartita(RecPlayer* personaggio){
 		}
 	}
 
-	cout << 2 << endl;
+	/*cout << 2 << endl;
 	// NEMICI
 	json nemiciJson = DATA_CONFIGURAZIONI["nemici"];
 	for (json::iterator it = nemiciJson.begin(); it != nemiciJson.end(); ++it) {
@@ -2518,7 +2519,7 @@ void istanziamentoPartita(RecPlayer* personaggio){
 	}
 
 	titolo("Ho dormito troppo, dove andiamo oggi?");
-
+	*/
 }
 
 //NEW MAIN
