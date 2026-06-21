@@ -2452,7 +2452,7 @@ void viaggiaTraZone(RecPlayer* personaggio, string toZona){
 		personaggio->setZona(toZona);
 
 		unsigned short iSelezione = 0;
-		unsigned short i = 0;
+		unsigned short i = 1;
 
 		unsigned short numNPC = zonaSelezionata.getAllNPC().size();
 		unsigned short numDifficolta = zonaSelezionata.getDifficolta();
@@ -2476,7 +2476,7 @@ void viaggiaTraZone(RecPlayer* personaggio, string toZona){
 
 		if(numChildren > 0 || numParent > 0){
 			cout << endl << endl;
-			racconto(i + " - Posso viaggiare");
+			racconto(i + " - Posso viaggiare in altri luoghi...");
 			i++;
 		}
 
@@ -2485,7 +2485,7 @@ void viaggiaTraZone(RecPlayer* personaggio, string toZona){
 		if(iSelezione > 0 && iSelezione <= i){
 			if(iSelezione <= numNPC){
 				// parlare con NPC
-
+				
 			} else if (iSelezione > numNPC && iSelezione <= numNPC+(numDifficolta > 0 ? 1 : 0)){
 				// battaglia
 
